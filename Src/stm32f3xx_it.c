@@ -36,11 +36,16 @@
 #include "stm32f3xx_it.h"
 
 /* USER CODE BEGIN 0 */
-
+extern int lap;
+extern int startFlag;
+extern int startMove;
+int itCounter=0;
+int lapItCounter=0;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
 extern TIM_HandleTypeDef htim6;
+extern TIM_HandleTypeDef htim7;
 
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
@@ -193,16 +198,32 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+* @brief This function handles EXTI line0 interrupt.
+*/
+void EXTI0_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI0_IRQn 0 */
+		if(HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0))
+		startFlag=1;
+  /* USER CODE END EXTI0_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+  /* USER CODE BEGIN EXTI0_IRQn 1 */
+	
+		
+  /* USER CODE END EXTI0_IRQn 1 */
+}
+
+/**
 * @brief This function handles Timer 6 interrupt and DAC underrun interrupts.
 */
-extern int lap;
 void TIM6_DAC_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
-
+	lapItCounter++;
   /* USER CODE END TIM6_DAC_IRQn 0 */
   HAL_TIM_IRQHandler(&htim6);
   /* USER CODE BEGIN TIM6_DAC_IRQn 1 */
+	if(lapItCounter==15){
 	if(lap==8)
 		lap=0;
 	lap++;
@@ -232,8 +253,74 @@ void TIM6_DAC_IRQHandler(void)
 			HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_15);
 			break;
 	}
+	lapItCounter=0;
+}
 
   /* USER CODE END TIM6_DAC_IRQn 1 */
+}
+
+/**
+* @brief This function handles TIM7 global interrupt.
+*/
+void TIM7_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM7_IRQn 0 */
+	itCounter++;
+	switch(lap){
+		case 1:
+			if(itCounter==12){
+				startMove=1;
+				itCounter=0;
+			}
+			break;
+		case 2:
+			if(itCounter==11){
+				startMove=1;
+				itCounter=0;
+			}
+			break;
+		case 3:
+			if(itCounter==10){
+				startMove=1;
+				itCounter=0;
+			}
+			break;
+		case 4:
+			if(itCounter==9){
+				startMove=1;
+				itCounter=0;
+			}
+			break;
+		case 5:
+			if(itCounter==8){
+				startMove=1;
+				itCounter=0;
+			}
+			break;
+		case 6:
+			if(itCounter==7){
+				startMove=1;
+				itCounter=0;
+			}
+			break;
+		case 7:
+			if(itCounter==6){
+				startMove=1;
+				itCounter=0;
+			}
+			break;
+		case 8:
+			if(itCounter==5){
+				startMove=1;
+				itCounter=0;
+			}
+			break;
+	}
+  /* USER CODE END TIM7_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim7);
+  /* USER CODE BEGIN TIM7_IRQn 1 */
+
+  /* USER CODE END TIM7_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

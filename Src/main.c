@@ -39,15 +39,18 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f3xx_hal.h"
-#include "LiquidCrystal.h"
-#include "stdlib.h"
 
 /* USER CODE BEGIN Includes */
+#include "main.h"
+#include "stm32f3xx_hal.h"
+#include "LiquidCrystal.h"
+#include "stdlib.h"
 
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim6;
+TIM_HandleTypeDef htim7;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -56,6 +59,8 @@ int lap;
 int score;
 int chance;
 int enemyCounter;
+int startFlag;
+int startMove;
 typedef unsigned char byte;
 
 byte leftSideOfMap[8] = {
@@ -152,40 +157,10 @@ byte leftSideOfCar[8] = {
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM6_Init(void);
+static void MX_TIM7_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-void Welcome(){
-	for(int i=0;i<5;i++){
-	setCursor(5,0);
-	print("DEATH RACE");
-	setCursor(5,2);
-	print("@hoda_msw");
-	setCursor(5,3);
-	print("@sogandDVR");
-	display();
-	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_8);
-	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_9);
-	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_10);
-	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_11);
-	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_12);
-	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_13);
-	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_14);
-	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_15);
-	HAL_Delay(500);
-	noDisplay();
-	HAL_Delay(300);
-	}
-	display();
-	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_8,0);
-	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_9,0);
-	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_10,0);
-	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_11,0);
-	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_12,0);
-	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_13,0);
-	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_14,0);
-	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_15,0);
-}
 
 void MakeNewEnemy(){
 	int r=0;
@@ -196,7 +171,7 @@ void MakeNewEnemy(){
 	write(5);
 	}
 	else MakeNewEnemy();
-	HAL_Delay(700);
+	HAL_Delay(500);
 }
 
 void SetMapForFirstTime(){
@@ -214,10 +189,10 @@ void SetMapForFirstTime(){
 	for(int i=0;i<17;i++){
 		map[i][3]='D';
 	}
-	map[0][3]='c';	//LeftCorner
-	map[17][3]='C';	//RightCorner
-	MakeNewEnemy();
-	enemyCounter++;
+	map[0][3]='c';//LeftCorner
+	map[17][3]='C';//RightCorner
+	//MakeNewEnemy();
+	//enemyCounter++;
 	map[8][3]='M';
 	map[9][3]='N';
 }
@@ -257,7 +232,6 @@ void DrawMap(){
 					write(4);
 					break;
 				case 'E':
-					write(5);
 					break;
 				case 'M':
 					write(6);
@@ -271,7 +245,7 @@ void DrawMap(){
 	display();
 }
 
-void SetMap(int maxOfEnemyCounter){
+void SetMap(){
 	for(int i=0;i<18;i++){
 		if(map[i][3]=='E'){
 			map[i][3]='-';
@@ -280,6 +254,11 @@ void SetMap(int maxOfEnemyCounter){
 			MakeNewEnemy();
 		}
 	}
+	while(enemyCounter<lap+1){
+					MakeNewEnemy();
+					enemyCounter++;
+				}
+	while(startMove==1){
 	for(int i=0;i<16;i++){
 		for(int j=0;j<4;j++){
 			if(map[i][j]=='E'){
@@ -296,50 +275,87 @@ void SetMap(int maxOfEnemyCounter){
 				print(" ");
 				setCursor(i,j+1);
 				write(5);
-				while(enemyCounter<=maxOfEnemyCounter){
-					MakeNewEnemy();
-					enemyCounter++;
-				}
+				
 				break;
 			}
 		}
 	}
-	HAL_Delay(500);
+	startMove=0;
+}
 	//DrawMap();
 }
 
-void GameController(){
-	switch(lap){
-		case 1:
-			SetMap(2);
-			break;
-		case 2:
-			SetMap(3);
-			break;
-		case 3:
-			SetMap(4);
-			break;
-		case 4:
-			SetMap(5);
-			break;
-		case 5:
-			SetMap(6);
-			break;
-		case 6:
-			SetMap(7);
-			break;
-		case 7:
-			SetMap(8);
-			break;
-		case 8:
-			SetMap(10);
-			break;
-	}
-}
+//void GameController(){
+//	switch(lap){
+//		case 1:
+//			SetMap(2);
+//			break;
+//		case 2:
+//			SetMap(3);
+//			break;
+//		case 3:
+//			SetMap(4);
+//			break;
+//		case 4:
+//			SetMap(5);
+//			break;
+//		case 5:
+//			SetMap(6);
+//			break;
+//		case 6:
+//			SetMap(7);
+//			break;
+//		case 7:
+//			SetMap(8);
+//			break;
+//		case 8:
+//			SetMap(10);
+//			break;
+//	}
+//}
 
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
+void Welcome(){
+	while(startFlag!=1){
+	setCursor(5,0);
+	print("DEATH RACE");
+	setCursor(5,2);
+	print("@hoda_msw");
+	setCursor(5,3);
+	print("@sogandDVR");
+	display();
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_8);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_9);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_10);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_11);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_12);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_13);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_14);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_15);
+	HAL_Delay(500);
+	noDisplay();
+	HAL_Delay(300);
+	}
+	display();
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_8,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_9,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_10,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_11,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_12,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_13,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_14,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_15,0);
+	DrawMap();
+	lap=1;
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_8);
+	HAL_TIM_Base_Start_IT(&htim6);
+	HAL_TIM_Base_Start_IT(&htim7);
+	while(1){
+	SetMap();
+	}
+}
 
 /* USER CODE END 0 */
 
@@ -373,24 +389,25 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM6_Init();
+  MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
 	LiquidCrystal(GPIOD, GPIO_PIN_8, GPIO_PIN_9, GPIO_PIN_10, GPIO_PIN_11, GPIO_PIN_12, GPIO_PIN_13, GPIO_PIN_14);
 	
 	begin(20,4);
-	Welcome();
+	startFlag=0;
+	enemyCounter=0;
 	SetMapForFirstTime();
-	DrawMap();
-	lap=1;
-	HAL_TIM_Base_Start_IT(&htim6);
+	startMove=0;
+	Welcome();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
+//		GameController();
   /* USER CODE END WHILE */
-		GameController();
+
   /* USER CODE BEGIN 3 */
 
   }
@@ -410,12 +427,13 @@ void SystemClock_Config(void)
 
     /**Initializes the CPU, AHB and APB busses clocks 
     */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = 16;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL12;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
@@ -430,7 +448,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
@@ -454,9 +472,9 @@ static void MX_TIM6_Init(void)
   TIM_MasterConfigTypeDef sMasterConfig;
 
   htim6.Instance = TIM6;
-  htim6.Init.Prescaler = 47999;
+  htim6.Init.Prescaler = 35999;
   htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim6.Init.Period = 14999;
+  htim6.Init.Period = 1999;
   htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
   {
@@ -466,6 +484,31 @@ static void MX_TIM6_Init(void)
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim6, &sMasterConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
+/* TIM7 init function */
+static void MX_TIM7_Init(void)
+{
+
+  TIM_MasterConfigTypeDef sMasterConfig;
+
+  htim7.Instance = TIM7;
+  htim7.Init.Prescaler = 12499;
+  htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim7.Init.Period = 719;
+  htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim7) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim7, &sMasterConfig) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
@@ -485,11 +528,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct;
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOF_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOE_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11 
                           |GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : PA0 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PE8 PE9 PE10 PE11 
                            PE12 PE13 PE14 PE15 */
@@ -499,6 +550,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
 }
 
