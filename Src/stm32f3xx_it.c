@@ -36,14 +36,44 @@
 #include "stm32f3xx_it.h"
 
 /* USER CODE BEGIN 0 */
+#include "LiquidCrystal.h"
+#include "stdlib.h"
+
+extern char map[18][4];
 extern int lap;
 extern int startFlag;
 extern int startMove;
+extern int scale;
+extern int moveC;
+int enemies[10]={-1};
 int itCounter=0;
-int lapItCounter=0;
+int adcFlag=0;
+extern int lapItCounter;
+extern unsigned char byte;
+
+void MakeNewEnemy(){
+	int r=0;
+	r=rand()%15 +1;
+	if(map[r][0]=='-'){
+	map[r][0]='E';
+	setCursor(r,0);
+	write(5);
+	}
+	else MakeNewEnemy();
+	HAL_Delay(500);
+}
+
+int EnemyRandomTime(int maxNumber){
+	int r=0;
+	r=rand()%maxNumber;
+	return r;
+}
+
+
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+extern ADC_HandleTypeDef hadc1;
 extern TIM_HandleTypeDef htim6;
 extern TIM_HandleTypeDef htim7;
 
@@ -203,8 +233,9 @@ void SysTick_Handler(void)
 void EXTI0_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI0_IRQn 0 */
-		if(HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0))
-		startFlag=1;
+		if(HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0)){
+			startFlag=1;
+		}
   /* USER CODE END EXTI0_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
   /* USER CODE BEGIN EXTI0_IRQn 1 */
@@ -214,12 +245,42 @@ void EXTI0_IRQHandler(void)
 }
 
 /**
+* @brief This function handles ADC1 and ADC2 interrupts.
+*/
+void ADC1_2_IRQHandler(void)
+{
+  /* USER CODE BEGIN ADC1_2_IRQn 0 */
+	//clear();
+	int i=0;
+	adcFlag++;
+	
+	if(adcFlag==3){
+		adcFlag=0;
+		i=HAL_ADC_GetValue(&hadc1);
+		scale=i*14/63 +1;
+		moveC=1;
+	}
+	HAL_ADC_Start_IT(&hadc1);
+
+  /* USER CODE END ADC1_2_IRQn 0 */
+  HAL_ADC_IRQHandler(&hadc1);
+  /* USER CODE BEGIN ADC1_2_IRQn 1 */
+  /* USER CODE END ADC1_2_IRQn 1 */
+}
+
+/**
 * @brief This function handles Timer 6 interrupt and DAC underrun interrupts.
 */
 void TIM6_DAC_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
 	lapItCounter++;
+	if(lap==1){
+		for(int i=0;i<10;i++)
+				enemies[i]=-1;
+			for(int i=0;i<=lap;i++)
+				enemies[i]=EnemyRandomTime(10);
+	}
   /* USER CODE END TIM6_DAC_IRQn 0 */
   HAL_TIM_IRQHandler(&htim6);
   /* USER CODE BEGIN TIM6_DAC_IRQn 1 */
@@ -230,31 +291,68 @@ void TIM6_DAC_IRQHandler(void)
 	switch(lap){
 		case 1 :
 			HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_8);
+			for(int i=0;i<10;i++)
+				enemies[i]=-1;
+			for(int i=0;i<=lap;i++)
+				enemies[i]=EnemyRandomTime(10);
 			break;
 		case 2 :
 			HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_9);
+			for(int i=0;i<10;i++)
+				enemies[i]=-1;
+			for(int i=0;i<=lap;i++)
+				enemies[i]=EnemyRandomTime(10);
 			break;
 		case 3 :
 			HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_10);
+			for(int i=0;i<10;i++)
+				enemies[i]=-1;
+			for(int i=0;i<=lap;i++)
+				enemies[i]=EnemyRandomTime(10);
 			break;
 		case 4 :
 			HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_11);
+			for(int i=0;i<10;i++)
+				enemies[i]=-1;
+			for(int i=0;i<=lap;i++)
+				enemies[i]=EnemyRandomTime(10);
 			break;
 		case 5 :
 			HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_12);
+			for(int i=0;i<10;i++)
+				enemies[i]=-1;
+			for(int i=0;i<=lap;i++)
+				enemies[i]=EnemyRandomTime(12);
 			break;
 		case 6 :
 			HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_13);
+			for(int i=0;i<10;i++)
+				enemies[i]=-1;
+			for(int i=0;i<=lap;i++)
+				enemies[i]=EnemyRandomTime(12);
 			break;
 		case 7 :
 			HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_14);
+			for(int i=0;i<10;i++)
+				enemies[i]=-1;
+			for(int i=0;i<=lap;i++)
+				enemies[i]=EnemyRandomTime(14);
 			break;
 		case 8 :
 			HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_15);
+			for(int i=0;i<10;i++)
+				enemies[i]=-1;
+			for(int i=0;i<=lap+1;i++)
+				enemies[i]=EnemyRandomTime(14);
 			break;
 	}
 	lapItCounter=0;
 }
+
+	for(int i=0;i<10;i++){
+		if(enemies[i]==lapItCounter)
+			MakeNewEnemy();
+	}
 
   /* USER CODE END TIM6_DAC_IRQn 1 */
 }

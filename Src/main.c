@@ -49,6 +49,8 @@
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
+ADC_HandleTypeDef hadc1;
+
 TIM_HandleTypeDef htim6;
 TIM_HandleTypeDef htim7;
 
@@ -58,9 +60,11 @@ char map[18][4];
 int lap;
 int score;
 int chance;
-int enemyCounter;
 int startFlag;
 int startMove;
+int lapItCounter;
+int scale;
+int moveC;
 typedef unsigned char byte;
 
 byte leftSideOfMap[8] = {
@@ -158,21 +162,10 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM6_Init(void);
 static void MX_TIM7_Init(void);
+static void MX_ADC1_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-
-void MakeNewEnemy(){
-	int r=0;
-	r=rand()%15 +1;
-	if(map[r][0]=='-'){
-	map[r][0]='E';
-	setCursor(r,0);
-	write(5);
-	}
-	else MakeNewEnemy();
-	HAL_Delay(500);
-}
 
 void SetMapForFirstTime(){
 	for(int i=0;i<18;i++){
@@ -191,12 +184,9 @@ void SetMapForFirstTime(){
 	}
 	map[0][3]='c';//LeftCorner
 	map[17][3]='C';//RightCorner
-	//MakeNewEnemy();
-	//enemyCounter++;
 	map[8][3]='M';
 	map[9][3]='N';
 }
-
 
 void DrawMap(){
 	noDisplay();
@@ -245,28 +235,25 @@ void DrawMap(){
 	display();
 }
 
+
 void SetMap(){
 	for(int i=0;i<18;i++){
 		if(map[i][3]=='E'){
 			map[i][3]='-';
 			setCursor(i,3);
 			write(2);
-			MakeNewEnemy();
 		}
 	}
-	while(enemyCounter<lap+1){
-					MakeNewEnemy();
-					enemyCounter++;
-				}
 	while(startMove==1){
-	for(int i=0;i<16;i++){
-		for(int j=0;j<4;j++){
+	for(int i=16;i>0;i--){
+		for(int j=3;j>=0;j--){
 			if(map[i][j]=='E'){
 				map[i][j]='-';
 //				if(map[i][j+1]=='M'||map[i][j+1]=='N'){
-//					clear();
-//					setCursor(8,1);
-//					print("End");
+//					chance--;
+//					if(chance>0){
+//						lapItCounter=0;
+//					}
 //					break;
 //				}
 					
@@ -274,45 +261,48 @@ void SetMap(){
 				setCursor(i,j);
 				print(" ");
 				setCursor(i,j+1);
-				write(5);
-				
+				write(5);		
 				break;
 			}
 		}
 	}
 	startMove=0;
 }
-	//DrawMap();
+	while(moveC==1){
+		for(int i=1;i<18;i++){
+			if(map[i][3]=='M'){
+				if(i>scale){
+					for(;i>scale;i--){
+						map[i+1][3]='-';
+						map[i][3]='N';
+						map[i-1][3]='M';
+						setCursor(i,3);
+						write(7);
+						setCursor(i-1,3);
+						write(6);
+						setCursor(i+1,3);
+						write(2);
+			}
+					moveC=0;
+			}
+			else{
+				for(;i<scale;i++){
+						map[i][3]='-';
+						map[i+1][3]='M';
+						map[i+2][3]='N';
+						setCursor(i+2,3);
+						write(7);
+						setCursor(i+1,3);
+						write(6);
+						setCursor(i,3);
+						write(2);
+			}
+				moveC=0;
+		}
+	}
+	}
 }
-
-//void GameController(){
-//	switch(lap){
-//		case 1:
-//			SetMap(2);
-//			break;
-//		case 2:
-//			SetMap(3);
-//			break;
-//		case 3:
-//			SetMap(4);
-//			break;
-//		case 4:
-//			SetMap(5);
-//			break;
-//		case 5:
-//			SetMap(6);
-//			break;
-//		case 6:
-//			SetMap(7);
-//			break;
-//		case 7:
-//			SetMap(8);
-//			break;
-//		case 8:
-//			SetMap(10);
-//			break;
-//	}
-//}
+}
 
 /* USER CODE END PFP */
 
@@ -347,11 +337,13 @@ void Welcome(){
 	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_13,0);
 	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_14,0);
 	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_15,0);
-	DrawMap();
+	
 	lap=1;
 	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_8);
+	DrawMap();
 	HAL_TIM_Base_Start_IT(&htim6);
 	HAL_TIM_Base_Start_IT(&htim7);
+	HAL_ADC_Start_IT(&hadc1);
 	while(1){
 	SetMap();
 	}
@@ -390,14 +382,16 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM6_Init();
   MX_TIM7_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 	LiquidCrystal(GPIOD, GPIO_PIN_8, GPIO_PIN_9, GPIO_PIN_10, GPIO_PIN_11, GPIO_PIN_12, GPIO_PIN_13, GPIO_PIN_14);
 	
 	begin(20,4);
 	startFlag=0;
-	enemyCounter=0;
 	SetMapForFirstTime();
 	startMove=0;
+	chance=8;
+	lapItCounter=0;
 	Welcome();
   /* USER CODE END 2 */
 
@@ -424,6 +418,7 @@ void SystemClock_Config(void)
 
   RCC_OscInitTypeDef RCC_OscInitStruct;
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
+  RCC_PeriphCLKInitTypeDef PeriphClkInit;
 
     /**Initializes the CPU, AHB and APB busses clocks 
     */
@@ -453,6 +448,13 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC12;
+  PeriphClkInit.Adc12ClockSelection = RCC_ADC12PLLCLK_DIV1;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
     /**Configure the Systick interrupt time 
     */
   HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
@@ -463,6 +465,57 @@ void SystemClock_Config(void)
 
   /* SysTick_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+}
+
+/* ADC1 init function */
+static void MX_ADC1_Init(void)
+{
+
+  ADC_MultiModeTypeDef multimode;
+  ADC_ChannelConfTypeDef sConfig;
+
+    /**Common config 
+    */
+  hadc1.Instance = ADC1;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
+  hadc1.Init.Resolution = ADC_RESOLUTION_6B;
+  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
+  hadc1.Init.DiscontinuousConvMode = DISABLE;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.DMAContinuousRequests = DISABLE;
+  hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc1.Init.LowPowerAutoWait = DISABLE;
+  hadc1.Init.Overrun = ADC_OVR_DATA_OVERWRITTEN;
+  if (HAL_ADC_Init(&hadc1) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+    /**Configure the ADC multi-mode 
+    */
+  multimode.Mode = ADC_MODE_INDEPENDENT;
+  if (HAL_ADCEx_MultiModeConfigChannel(&hadc1, &multimode) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+    /**Configure Regular Channel 
+    */
+  sConfig.Channel = ADC_CHANNEL_4;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SingleDiff = ADC_SINGLE_ENDED;
+  sConfig.SamplingTime = ADC_SAMPLETIME_601CYCLES_5;
+  sConfig.OffsetNumber = ADC_OFFSET_NONE;
+  sConfig.Offset = 0;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
 }
 
 /* TIM6 init function */
