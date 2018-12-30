@@ -68,91 +68,113 @@ int moveC;
 typedef unsigned char byte;
 
 byte leftSideOfMap[8] = {
-  0x18,
-  0x18,
-  0x18,
-  0x18,
-  0x18,
-  0x18,
-  0x18,
-  0x18,
+	0x18,
+	0x1C,
+	0x1E,
+	0x1C,
+	0x18,
+	0x1C,
+	0x1C,
+	0x18
 };
 
 byte rightSideOfMap[8] = {
-  0x03,
-  0x03,
-  0x03,
-  0x03,
-  0x03,
-  0x03,
-  0x03,
-  0x03,
+	0x03,
+	0x07,
+	0x0F,
+	0x07,
+	0x03,
+	0x07,
+	0x07,
+	0x03
 };
 
 byte downSideOfMap[8] = {
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x00,
-  0x1F,
-  0x1F,
+  	0x00,
+	0x00,
+	0x00,
+	0x00,
+	0x00,
+	0x00,
+	0x0A,
+	0x1F
 };
 
 byte rightCornerOfMap[8] = {
-  0x03,
-  0x03,
-  0x03,
-  0x03,
-  0x03,
-  0x03,
-  0x1F,
-  0x1F,
+	0x01,
+	0x07,
+	0x0F,
+	0x07,
+	0x03,
+	0x03,
+	0x0B,
+    0x1F
 };
 
 byte leftCornerOfMap[8] = {
-  0x18,
-  0x18,
-  0x18,
-  0x18,
-  0x18,
-  0x18,
-  0x1F,
-  0x1F,
+	0x10,
+	0x1C,
+	0x1E,
+	0x1E,
+	0x1C,
+	0x18,
+	0x1A,
+	0x1F
 };
 
 byte enemy[8] = {
-  0x1B,
-  0x1B,
-  0x04,
-  0x0E,
-  0x04,
-  0x1F,
-  0x0E,
-  0x04,
+    0x04,
+	0x0A,
+	0x0A,
+	0x1F,
+	0x11,
+	0x1F,
+	0x0A,
+	0x00
 };
 
 byte rightSideOfCar[8] = {
-  0x13,
-  0x1F,
-  0x1B,
-  0x18,
-  0x18,
-  0x1B,
-  0x1F,
-  0x03,
+    0x00,
+	0x18,
+	0x04,
+	0x1A,
+	0x1B,
+	0x01,
+	0x0D,
+	0x13
 };
 
 byte leftSideOfCar[8] = {
-  0x19,
-  0x1F,
-  0x1B,
-  0x03,
-  0x03,
-  0x1B,
-  0x1F,
-  0x18,
+    0x00,
+	0x03,
+	0x04,
+	0x0B,
+	0x1B,
+	0x10,
+	0x16,
+	0x09
+};
+
+byte heart[8]={
+    0x00,
+	0x0A,
+	0x1F,
+	0x1F,
+	0x0E,
+	0x04,
+	0x00,
+	0x1F
+};
+
+byte Score[8]={
+    0x04,
+	0x1B,
+	0x11,
+	0x11,
+	0x0E,
+	0x04,
+	0x04,
+	0x0E
 };
 
 /* USER CODE END PV */
@@ -198,6 +220,8 @@ void DrawMap(){
 	createChar(5, enemy);
 	createChar(6, leftSideOfCar);
 	createChar(7, rightSideOfCar);
+    createChar(8, heart);
+    createChar(9,Score);
 	
 	for(int i=0;i<18;i++){
 		for(int j=0;j<4;j++){
@@ -232,11 +256,19 @@ void DrawMap(){
 			}
 		}
 	}
+    setCursor(19,2);
+    write(8);
+    setCursor(19,0);
+    write(9);
 	display();
 }
 
 
 void SetMap(){
+    setCursor(19,2);
+    write(8);
+    setCursor(19,0);
+    write(9);
 	for(int i=0;i<18;i++){
 		if(map[i][3]=='E'){
 			map[i][3]='-';
@@ -282,11 +314,10 @@ void SetMap(){
 						write(6);
 						setCursor(i+1,3);
 						write(2);
-			}
+                    }
 					moveC=0;
-			}
-			else{
-				for(;i<scale;i++){
+                }else{
+                    for(;i<scale;i++){
 						map[i][3]='-';
 						map[i+1][3]='M';
 						map[i+2][3]='N';
@@ -296,12 +327,12 @@ void SetMap(){
 						write(6);
 						setCursor(i,3);
 						write(2);
-			}
-				moveC=0;
-		}
-	}
-	}
-}
+                    }
+                    moveC=0;
+                }//end else
+            }//end if
+        }//end for
+    }//end while
 }
 
 /* USER CODE END PFP */
@@ -309,8 +340,8 @@ void SetMap(){
 /* USER CODE BEGIN 0 */
 void Welcome(){
 	while(startFlag!=1){
-	setCursor(5,0);
-	print("DEATH RACE");
+	setCursor(2,0);
+	print("<< DEATH RACE >>");
 	setCursor(5,2);
 	print("@hoda_msw");
 	setCursor(5,3);
