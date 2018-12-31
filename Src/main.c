@@ -75,7 +75,7 @@ byte leftSideOfMap[8] = {
 	0x18,
 	0x1C,
 	0x1C,
-	0x18
+	0x18,
 };
 
 byte rightSideOfMap[8] = {
@@ -86,7 +86,7 @@ byte rightSideOfMap[8] = {
 	0x03,
 	0x07,
 	0x07,
-	0x03
+	0x03,
 };
 
 byte downSideOfMap[8] = {
@@ -97,7 +97,7 @@ byte downSideOfMap[8] = {
 	0x00,
 	0x00,
 	0x0A,
-	0x1F
+	0x1F,
 };
 
 byte rightCornerOfMap[8] = {
@@ -108,7 +108,7 @@ byte rightCornerOfMap[8] = {
 	0x03,
 	0x03,
 	0x0B,
-    0x1F
+    0x1F,
 };
 
 byte leftCornerOfMap[8] = {
@@ -119,7 +119,7 @@ byte leftCornerOfMap[8] = {
 	0x1C,
 	0x18,
 	0x1A,
-	0x1F
+	0x1F,
 };
 
 byte enemy[8] = {
@@ -130,7 +130,7 @@ byte enemy[8] = {
 	0x11,
 	0x1F,
 	0x0A,
-	0x00
+	0x00,
 };
 
 byte rightSideOfCar[8] = {
@@ -141,7 +141,7 @@ byte rightSideOfCar[8] = {
 	0x1B,
 	0x01,
 	0x0D,
-	0x13
+	0x13,
 };
 
 byte leftSideOfCar[8] = {
@@ -152,7 +152,7 @@ byte leftSideOfCar[8] = {
 	0x1B,
 	0x10,
 	0x16,
-	0x09
+	0x09,
 };
 
 byte heart[8]={
@@ -163,7 +163,7 @@ byte heart[8]={
 	0x0E,
 	0x04,
 	0x00,
-	0x1F
+	0x1F,
 };
 
 byte Score[8]={
@@ -174,7 +174,7 @@ byte Score[8]={
 	0x0E,
 	0x04,
 	0x04,
-	0x0E
+	0x0E,
 };
 
 /* USER CODE END PV */
@@ -190,6 +190,7 @@ static void MX_ADC1_Init(void);
 /* Private function prototypes -----------------------------------------------*/
 
 void SetMapForFirstTime(){
+
 	for(int i=0;i<18;i++){
 		for(int j=0;j<4;j++){
 			map[i][j]='-';
@@ -208,6 +209,7 @@ void SetMapForFirstTime(){
 	map[17][3]='C';//RightCorner
 	map[8][3]='M';
 	map[9][3]='N';
+    
 }
 
 void DrawMap(){
@@ -220,9 +222,8 @@ void DrawMap(){
 	createChar(5, enemy);
 	createChar(6, leftSideOfCar);
 	createChar(7, rightSideOfCar);
-    createChar(8, heart);
-    createChar(9,Score);
-	
+    
+    
 	for(int i=0;i<18;i++){
 		for(int j=0;j<4;j++){
 			setCursor(i,j);
@@ -246,6 +247,7 @@ void DrawMap(){
 					write(4);
 					break;
 				case 'E':
+                    write(5);
 					break;
 				case 'M':
 					write(6);
@@ -256,19 +258,12 @@ void DrawMap(){
 			}
 		}
 	}
-    setCursor(19,2);
-    write(8);
-    setCursor(19,0);
-    write(9);
-	display();
+	display();    
 }
 
 
 void SetMap(){
-    setCursor(19,2);
-    write(8);
-    setCursor(19,0);
-    write(9);
+
 	for(int i=0;i<18;i++){
 		if(map[i][3]=='E'){
 			map[i][3]='-';
@@ -292,6 +287,9 @@ void SetMap(){
 				map[i][j+1]='E';
 				setCursor(i,j);
 				print(" ");
+                
+                setCursor(19,2);
+                print("S");
 				setCursor(i,j+1);
 				write(5);		
 				break;
