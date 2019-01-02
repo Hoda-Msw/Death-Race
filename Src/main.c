@@ -10,7 +10,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * COPYRIGHT(c) 2018 STMicroelectronics
+  * COPYRIGHT(c) 2019 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -79,7 +79,7 @@ byte leftSideOfMap[8] = {
 };
 
 byte rightSideOfMap[8] = {
-	0x03,
+  	0x03,
 	0x07,
 	0x0F,
 	0x07,
@@ -90,7 +90,7 @@ byte rightSideOfMap[8] = {
 };
 
 byte downSideOfMap[8] = {
-  	0x00,
+    0x00,
 	0x00,
 	0x00,
 	0x00,
@@ -101,18 +101,18 @@ byte downSideOfMap[8] = {
 };
 
 byte rightCornerOfMap[8] = {
-	0x01,
+  	0x01,
 	0x07,
 	0x0F,
 	0x07,
 	0x03,
 	0x03,
 	0x0B,
-    0x1F,
+  0x1F,
 };
 
 byte leftCornerOfMap[8] = {
-	0x10,
+  	0x10,
 	0x1C,
 	0x1E,
 	0x1E,
@@ -123,7 +123,7 @@ byte leftCornerOfMap[8] = {
 };
 
 byte enemy[8] = {
-    0x04,
+      0x04,
 	0x0A,
 	0x0A,
 	0x1F,
@@ -134,7 +134,7 @@ byte enemy[8] = {
 };
 
 byte rightSideOfCar[8] = {
-    0x00,
+  0x00,
 	0x18,
 	0x04,
 	0x1A,
@@ -145,7 +145,7 @@ byte rightSideOfCar[8] = {
 };
 
 byte leftSideOfCar[8] = {
-    0x00,
+  0x00,
 	0x03,
 	0x04,
 	0x0B,
@@ -177,6 +177,7 @@ byte Score[8]={
 	0x0E,
 };
 
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -190,7 +191,6 @@ static void MX_ADC1_Init(void);
 /* Private function prototypes -----------------------------------------------*/
 
 void SetMapForFirstTime(){
-
 	for(int i=0;i<18;i++){
 		for(int j=0;j<4;j++){
 			map[i][j]='-';
@@ -209,7 +209,6 @@ void SetMapForFirstTime(){
 	map[17][3]='C';//RightCorner
 	map[8][3]='M';
 	map[9][3]='N';
-    
 }
 
 void DrawMap(){
@@ -222,8 +221,10 @@ void DrawMap(){
 	createChar(5, enemy);
 	createChar(6, leftSideOfCar);
 	createChar(7, rightSideOfCar);
-    
-    
+//	createChar(8, heart);
+//  createChar(9,Score);
+
+	
 	for(int i=0;i<18;i++){
 		for(int j=0;j<4;j++){
 			setCursor(i,j);
@@ -247,7 +248,6 @@ void DrawMap(){
 					write(4);
 					break;
 				case 'E':
-                    write(5);
 					break;
 				case 'M':
 					write(6);
@@ -258,12 +258,16 @@ void DrawMap(){
 			}
 		}
 	}
-	display();    
+//	setCursor(18,0);
+//	write(8);
+//	setCursor(18,2);
+//	write(9);
+	display();
 }
 
 
-void SetMap(){
-
+int SetMap(){
+	char array[1];
 	for(int i=0;i<18;i++){
 		if(map[i][3]=='E'){
 			map[i][3]='-';
@@ -276,20 +280,34 @@ void SetMap(){
 		for(int j=3;j>=0;j--){
 			if(map[i][j]=='E'){
 				map[i][j]='-';
-//				if(map[i][j+1]=='M'||map[i][j+1]=='N'){
-//					chance--;
-//					if(chance>0){
-//						lapItCounter=0;
-//					}
-//					break;
-//				}
+				if(map[i][j+1]=='M'||map[i][j+1]=='N'){
+					chance--;
+					setCursor(18,3);
+					sprintf(array,"%d",chance);
+					print(array);
+					if(chance>0){
+						lapItCounter=0;
+						HAL_TIM_Base_Stop_IT(&htim6);
+						HAL_TIM_Base_Start_IT(&htim6);
+						map[8][3]='M';
+						map[9][3]='N';
+						setCursor(8,3);
+						write(6);
+						setCursor(9,3);
+						write(7);
+						startMove=0;
+					}
+					else{
+						clear();
+						setCursor(4,1);
+						print("GAME OVER");
+						return 0;
+					}
+				}
 					
 				map[i][j+1]='E';
 				setCursor(i,j);
 				print(" ");
-                
-                setCursor(19,2);
-                print("S");
 				setCursor(i,j+1);
 				write(5);		
 				break;
@@ -312,10 +330,34 @@ void SetMap(){
 						write(6);
 						setCursor(i+1,3);
 						write(2);
-                    }
+						if(map[i-1][3]=='E'||map[i][3]=='E'){
+							chance--;
+							setCursor(18,3);
+							write(chance);
+							if(chance>0){
+								lapItCounter=0;
+								HAL_TIM_Base_Stop_IT(&htim6);
+								HAL_TIM_Base_Start_IT(&htim6);
+								map[8][3]='M';
+								map[9][3]='N';
+								setCursor(8,3);
+								write(6);
+								setCursor(9,3);
+								write(7);
+								startMove=0;
+							}
+							else{
+						clear();
+						setCursor(4,1);
+						print("GAME OVER");
+						return 0;
+					}
+						}
+			}
 					moveC=0;
-                }else{
-                    for(;i<scale;i++){
+			}
+			else{
+				for(;i<scale;i++){
 						map[i][3]='-';
 						map[i+1][3]='M';
 						map[i+2][3]='N';
@@ -325,12 +367,36 @@ void SetMap(){
 						write(6);
 						setCursor(i,3);
 						write(2);
-                    }
-                    moveC=0;
-                }//end else
-            }//end if
-        }//end for
-    }//end while
+					if(map[i+1][3]=='E'||map[i+2][3]=='E'){
+							chance--;
+							setCursor(18,3);
+							write(chance);
+							if(chance>0){
+								lapItCounter=0;
+								HAL_TIM_Base_Stop_IT(&htim6);
+								HAL_TIM_Base_Start_IT(&htim6);
+								map[8][3]='M';
+								map[9][3]='N';
+								setCursor(8,3);
+								write(6);
+								setCursor(9,3);
+								write(7);
+								startMove=0;
+							}
+							else{
+						clear();
+						setCursor(4,1);
+						print("GAME OVER");
+						return 0;
+					}
+						}
+			}
+				moveC=0;
+		}
+	}
+	}
+}
+	return 1;
 }
 
 /* USER CODE END PFP */
@@ -338,8 +404,8 @@ void SetMap(){
 /* USER CODE BEGIN 0 */
 void Welcome(){
 	while(startFlag!=1){
-	setCursor(2,0);
-	print("<< DEATH RACE >>");
+	setCursor(5,0);
+	print("DEATH RACE");
 	setCursor(5,2);
 	print("@hoda_msw");
 	setCursor(5,3);
@@ -353,6 +419,18 @@ void Welcome(){
 	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_13);
 	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_14);
 	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_15);
+		
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_0);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_1);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_2);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_3);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_4);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_5);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_6);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_7);
+	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_13);
+	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_14);
+	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_15);
 	HAL_Delay(500);
 	noDisplay();
 	HAL_Delay(300);
@@ -367,14 +445,82 @@ void Welcome(){
 	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_14,0);
 	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_15,0);
 	
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_0,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_1,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_2,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_4,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_5,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_6,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_7,0);
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_13,0);
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_14,0);
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_15,0);
+	
 	lap=1;
 	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_8);
 	DrawMap();
+	char array[1];
+	sprintf(array,"%d",chance);
+	setCursor(18,3);
+	print(array);
 	HAL_TIM_Base_Start_IT(&htim6);
 	HAL_TIM_Base_Start_IT(&htim7);
 	HAL_ADC_Start_IT(&hadc1);
+	int i=1;
+	while(i==1){
+	i=SetMap();
+	}
+	HAL_TIM_Base_Stop_IT(&htim6);
+	HAL_TIM_Base_Stop_IT(&htim7);
+	HAL_ADC_Stop_IT(&hadc1);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_8,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_9,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_10,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_11,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_12,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_13,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_14,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_15,0);
+	
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_0,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_1,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_2,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_4,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_5,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_6,0);
+	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_7,0);
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_13,0);
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_14,0);
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_15,0);
 	while(1){
-	SetMap();
+	setCursor(4,1);
+	print("GAME OVER");
+	display();
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_8);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_9);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_10);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_11);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_12);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_13);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_14);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_15);
+		
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_0);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_1);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_2);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_3);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_4);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_5);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_6);
+	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_7);
+	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_13);
+	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_14);
+	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_15);
+	HAL_Delay(500);
+	noDisplay();
+	HAL_Delay(300);
 	}
 }
 
@@ -610,28 +756,45 @@ static void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct;
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOE_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOE_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11 
-                          |GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5 
+                          |GPIO_PIN_6|GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10 
+                          |GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14 
+                          |GPIO_PIN_15|GPIO_PIN_0|GPIO_PIN_1, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : PE2 PE3 PE4 PE5 
+                           PE6 PE8 PE9 PE10 
+                           PE11 PE12 PE13 PE14 
+                           PE15 PE0 PE1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5 
+                          |GPIO_PIN_6|GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10 
+                          |GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14 
+                          |GPIO_PIN_15|GPIO_PIN_0|GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PC13 PC14 PC15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PA0 */
   GPIO_InitStruct.Pin = GPIO_PIN_0;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : PE8 PE9 PE10 PE11 
-                           PE12 PE13 PE14 PE15 */
-  GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11 
-                          |GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);

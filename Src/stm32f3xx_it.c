@@ -4,7 +4,7 @@
   * @brief   Interrupt Service Routines.
   ******************************************************************************
   *
-  * COPYRIGHT(c) 2018 STMicroelectronics
+  * COPYRIGHT(c) 2019 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -48,8 +48,13 @@ extern int moveC;
 int enemies[10]={-1};
 int itCounter=0;
 int adcFlag=0;
+int turboCounter=0;
+int turboCharge=0;
+int turboFlag=0;
+int buttonFlag=0;
+int turboDeCharge=1;
 extern int lapItCounter;
-extern unsigned char byte;
+
 
 void MakeNewEnemy(){
 	int r=0;
@@ -233,9 +238,13 @@ void SysTick_Handler(void)
 void EXTI0_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI0_IRQn 0 */
-		if(HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0)){
+			if(startFlag==1){
+				//while(HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0)){
+					buttonFlag=1;
+				//}
+				//buttonFlag=0;
+			}
 			startFlag=1;
-		}
   /* USER CODE END EXTI0_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
   /* USER CODE BEGIN EXTI0_IRQn 1 */
@@ -275,6 +284,46 @@ void TIM6_DAC_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
 	lapItCounter++;
+	turboCounter++;
+	if(turboCounter==5){
+		turboCounter=0;
+		if(turboCharge<10)
+			turboCharge++;
+	}
+	
+	switch(turboCharge){
+		case 1:
+			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_0,1);
+			break;
+		case 2:
+			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_1,1);
+			break;
+		case 3:
+			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_2,1);
+			break;
+		case 4:
+			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,1);
+			break;
+		case 5:
+			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_4,1);
+			break;
+		case 6:
+			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_5,1);
+			break;
+		case 7:
+			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_6,1);
+			break;
+		case 8:
+			HAL_GPIO_WritePin(GPIOC,GPIO_PIN_13,1);
+			break;
+		case 9:
+			HAL_GPIO_WritePin(GPIOC,GPIO_PIN_14,1);
+			break;
+		case 10:
+			HAL_GPIO_WritePin(GPIOC,GPIO_PIN_15,1);
+			break;
+	}
+	
 	if(lap==1){
 		for(int i=0;i<10;i++)
 				enemies[i]=-1;
@@ -363,52 +412,64 @@ void TIM6_DAC_IRQHandler(void)
 void TIM7_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM7_IRQn 0 */
+	//int turboDecherg=0;
+	if(buttonFlag!=0){
+		while(HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0)){
+		turboFlag++;
+		}
+	}
+	
+	if(turboFlag>8){
+		turboDeCharge++;
+		turboCharge--;
+		turboFlag=0;
+	}
 	itCounter++;
 	switch(lap){
 		case 1:
-			if(itCounter==12){
+			if(itCounter==12-turboDeCharge){
 				startMove=1;
 				itCounter=0;
 			}
 			break;
 		case 2:
-			if(itCounter==11){
+			if(itCounter==11-turboDeCharge){
 				startMove=1;
 				itCounter=0;
 			}
 			break;
 		case 3:
-			if(itCounter==10){
+			if(itCounter==10-turboDeCharge){
 				startMove=1;
 				itCounter=0;
 			}
 			break;
 		case 4:
-			if(itCounter==9){
+			if(itCounter==9-turboDeCharge){
 				startMove=1;
 				itCounter=0;
 			}
 			break;
 		case 5:
-			if(itCounter==8){
+			if(itCounter==8-turboDeCharge){
 				startMove=1;
 				itCounter=0;
 			}
 			break;
 		case 6:
-			if(itCounter==7){
+			if(itCounter==7-turboDeCharge){
 				startMove=1;
 				itCounter=0;
 			}
 			break;
 		case 7:
-			if(itCounter==6){
+			if(itCounter==6-turboDeCharge){
 				startMove=1;
 				itCounter=0;
 			}
 			break;
 		case 8:
-			if(itCounter==5){
+			if(itCounter==5-turboDeCharge){
 				startMove=1;
 				itCounter=0;
 			}
