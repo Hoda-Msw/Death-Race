@@ -21,6 +21,8 @@
 .\project3\stm32f3xx_hal_dma.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_dma.h
 .\project3\stm32f3xx_hal_dma.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_dma_ex.h
 .\project3\stm32f3xx_hal_dma.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_cortex.h
+.\project3\stm32f3xx_hal_dma.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_adc.h
+.\project3\stm32f3xx_hal_dma.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_adc_ex.h
 .\project3\stm32f3xx_hal_dma.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_flash.h
 .\project3\stm32f3xx_hal_dma.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_flash_ex.h
 .\project3\stm32f3xx_hal_dma.o: ../Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_i2c.h

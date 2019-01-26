@@ -1,9 +1,11 @@
 --cpu=Cortex-M4.fp
 ".\project3\startup_stm32f303xc.o"
+".\project3\liquidcrystal.o"
 ".\project3\main.o"
 ".\project3\stm32f3xx_it.o"
 ".\project3\stm32f3xx_hal_msp.o"
-".\project3\liquidcrystal.o"
+".\project3\stm32f3xx_hal_adc.o"
+".\project3\stm32f3xx_hal_adc_ex.o"
 ".\project3\stm32f3xx_hal_tim.o"
 ".\project3\stm32f3xx_hal_tim_ex.o"
 ".\project3\stm32f3xx_hal.o"
