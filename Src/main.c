@@ -50,21 +50,25 @@
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
+ADC_HandleTypeDef hadc4;
 
 TIM_HandleTypeDef htim6;
 TIM_HandleTypeDef htim7;
+TIM_HandleTypeDef htim16;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 char map[18][4];
 int lap;
-int score;
 int chance;
 int startFlag;
 int startMove;
 int lapItCounter;
 int scale;
 int moveC;
+int time;
+int score=0;
+int accidentTime=0;
 typedef unsigned char byte;
 
 byte leftSideOfMap[8] = {
@@ -155,29 +159,282 @@ byte leftSideOfCar[8] = {
 	0x09,
 };
 
-byte heart[8]={
-    0x00,
-	0x0A,
+byte full[8] = {
 	0x1F,
 	0x1F,
-	0x0E,
-	0x04,
+	0x1F,
+	0x1F,
+	0x1F,
+	0x1F,
+	0x1F,
+	0x1F
+};
+
+byte HalfDown[8] = {		
+	0x00,
+	0x00,
+	0x00,
 	0x00,
 	0x1F,
+	0x1F,
+	0x1F,
+	0x1F
 };
 
-byte Score[8]={
-    0x04,
-	0x1B,
-	0x11,
-	0x11,
-	0x0E,
-	0x04,
-	0x04,
-	0x0E,
+byte DownTriangleR[8] = {	
+	0x00,
+	0x00,
+	0x00,
+	0x00,
+	0x03,
+	0x07,
+	0x0F,
+	0x1F
 };
 
 
+byte UpTriangleL[8] = {		
+	0x1F,
+	0x1E,
+	0x1C,
+	0x10,
+	0x00,
+	0x00,
+	0x00,
+	0x00
+};
+
+byte DownTriangleL[8] = {	
+	0x00,
+	0x00,
+	0x00,
+	0x00,
+	0x18,
+	0x1C,
+	0x1E,
+	0x1F
+};
+
+byte Middle21[8] = {		
+	0x1F,
+	0x1F,
+	0x0F,
+	0x0F,
+	0x0E,
+	0x1C,
+	0x18,
+	0x10
+};
+
+
+byte Middle22[8] = {		
+	0x01,
+	0x03,
+	0x07,
+	0x0F,
+	0x1F,
+	0x1F,
+	0x1E,
+	0x1C
+};
+
+byte Down21[8] = {
+	0x01,
+	0x03,
+	0x07,
+	0x0F,
+	0x1F,
+	0x1F,
+	0x1F,
+	0x1F
+};
+
+byte Down22[8] = {
+	0x1F,
+	0x1E,
+	0x1C,
+	0x18,
+	0x1F,
+	0x1F,
+	0x1F,
+	0x1F
+};
+
+byte Up31[8] = {
+	0x01,
+	0x03,
+	0x07,
+	0x0F,
+	0x1C,
+	0x18,
+	0x00,
+	0x00
+};
+
+byte Up32[8] = {
+	0x00,
+	0x00,
+	0x00,
+	0x03,
+	0x07,
+	0x0E,
+	0x1C,
+	0x18
+};
+
+byte UpTriangleR[8] = {
+	0x1F,
+	0x0F,
+	0x07,
+	0x03,
+	0x00,
+	0x00,
+	0x00,
+	0x00
+};
+
+byte Middle31[8] = {
+	0x10,
+	0x18,
+	0x1E,
+	0x1F,
+	0x03,
+	0x01,
+	0x00,
+	0x00
+};
+
+byte Middle32[8] = {
+	0x00,
+	0x00,
+	0x00,
+	0x10,
+	0x18,
+	0x1E,
+	0x07,
+	0x03
+};
+
+byte Down3[8] = {
+	0x03,
+	0x03,
+	0x03,
+	0x07,
+	0x1E,
+	0x1C,
+	0x1C,
+	0x18
+};
+
+void counting(){
+	createChar(10, full);
+	createChar(11, HalfDown);
+	createChar(12, DownTriangleR);
+	createChar(13, UpTriangleL);
+	createChar(14, DownTriangleL);
+	createChar(15, Middle21);
+	createChar(16, Middle22);
+	createChar(17, Down21);
+	createChar(18, Down22);
+	createChar(19, Up31);
+	createChar(20, Up32);
+	createChar(21, UpTriangleR);
+	createChar(22, Middle31);
+	createChar(23, Middle32);
+	createChar(24, Down3);
+	
+	clear();
+	setCursor(8,0);
+	write(12);
+	setCursor(9,0);
+	write(11);
+	setCursor(9,1);
+	write(10);
+	setCursor(9,2);
+	write(10);
+	setCursor(9,3);
+	write(10);
+	setCursor(8,3);
+	write(10);
+	setCursor(10,3);
+	write(10);
+	HAL_Delay(500);
+	clear();
+	
+	setCursor(8,1);
+	write(13);
+	setCursor(8,0);
+	write(12);
+	setCursor(9,0);
+	write(11);
+	setCursor(10,0);
+	write(11);
+	setCursor(11,0);
+	write(11);
+	setCursor(12,0);
+	write(14);
+	setCursor(12,1);
+	write(15);
+	setCursor(11,1);
+	write(12);
+	setCursor(11,2);
+	write(13);
+	setCursor(10,2);
+	write(16);
+	setCursor(9,2);
+	write(12);
+	setCursor(8,3);
+	write(17);
+	setCursor(9,3);
+	write(18);
+	setCursor(10,3);
+	write(11);
+	setCursor(11,3);
+	write(11);
+	setCursor(12,3);
+	write(11);
+	HAL_Delay(500);
+	clear();
+	
+	setCursor(7,0);
+	write(12);
+	setCursor(8,0);
+	write(11);
+	setCursor(9,0);
+	write(11);
+	setCursor(10,0);
+	write(11);
+	setCursor(11,0);
+	write(14);
+	setCursor(11,1);
+	write(13);
+	setCursor(10,1);
+	write(19);
+	setCursor(9,1);
+	write(20);
+	setCursor(8,1);
+	write(12);
+	setCursor(8,2);
+	write(21);
+	setCursor(9,2);
+	write(22);
+	setCursor(10,2);
+	write(23);
+	setCursor(11,2);
+	write(14);
+	setCursor(11,3);
+	write(13);
+	setCursor(10,3);
+	write(24);
+	setCursor(9,3);
+	write(11);
+	setCursor(8,3);
+	write(11);
+	setCursor(7,3);
+	write(11);
+	HAL_Delay(500);
+	clear();
+}
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -186,6 +443,8 @@ static void MX_GPIO_Init(void);
 static void MX_TIM6_Init(void);
 static void MX_TIM7_Init(void);
 static void MX_ADC1_Init(void);
+static void MX_TIM16_Init(void);
+static void MX_ADC4_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -212,7 +471,7 @@ void SetMapForFirstTime(){
 }
 
 void DrawMap(){
-	noDisplay();
+	//noDisplay();
 	createChar(0, leftSideOfMap);
 	createChar(1, rightSideOfMap);
 	createChar(2, downSideOfMap);
@@ -221,8 +480,6 @@ void DrawMap(){
 	createChar(5, enemy);
 	createChar(6, leftSideOfCar);
 	createChar(7, rightSideOfCar);
-//	createChar(8, heart);
-//  createChar(9,Score);
 
 	
 	for(int i=0;i<18;i++){
@@ -281,14 +538,19 @@ int SetMap(){
 			if(map[i][j]=='E'){
 				map[i][j]='-';
 				if(map[i][j+1]=='M'||map[i][j+1]=='N'){
+					setCursor(i,j+1);
+					write(2);
+					setCursor(i,j+2);
+					write(2);
+					setCursor(i,j);
+					write(2);
+					accidentTime=time;
 					chance--;
 					setCursor(18,3);
 					sprintf(array,"%d",chance);
 					print(array);
 					if(chance>0){
 						lapItCounter=0;
-						HAL_TIM_Base_Stop_IT(&htim6);
-						HAL_TIM_Base_Start_IT(&htim6);
 						map[8][3]='M';
 						map[9][3]='N';
 						setCursor(8,3);
@@ -331,13 +593,16 @@ int SetMap(){
 						setCursor(i+1,3);
 						write(2);
 						if(map[i-1][3]=='E'||map[i][3]=='E'){
+							setCursor(i-1,3);
+							write(2);
+							setCursor(i,3);
+							write(2);
+							accidentTime=time;
 							chance--;
 							setCursor(18,3);
 							write(chance);
 							if(chance>0){
 								lapItCounter=0;
-								HAL_TIM_Base_Stop_IT(&htim6);
-								HAL_TIM_Base_Start_IT(&htim6);
 								map[8][3]='M';
 								map[9][3]='N';
 								setCursor(8,3);
@@ -368,13 +633,16 @@ int SetMap(){
 						setCursor(i,3);
 						write(2);
 					if(map[i+1][3]=='E'||map[i+2][3]=='E'){
+							setCursor(i+1,3);
+							write(2);
+							setCursor(i+2,3);
+							write(2);
+							accidentTime=time;
 							chance--;
 							setCursor(18,3);
 							write(chance);
 							if(chance>0){
 								lapItCounter=0;
-								HAL_TIM_Base_Stop_IT(&htim6);
-								HAL_TIM_Base_Start_IT(&htim6);
 								map[8][3]='M';
 								map[9][3]='N';
 								setCursor(8,3);
@@ -402,8 +670,20 @@ int SetMap(){
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
+
+void SetScore(){
+	char array[4];
+	int x=0;
+	score=((lap+1)*lap)*(time-accidentTime);
+//	x=score/100;
+//	setCursor(18,1);
+//	sprintf(array,"%d",x);
+//	print(array);
+}
+
+
 void Welcome(){
-	while(startFlag!=1){
+	while(startFlag==0){
 	setCursor(5,0);
 	print("DEATH RACE");
 	setCursor(5,2);
@@ -411,6 +691,17 @@ void Welcome(){
 	setCursor(5,3);
 	print("@sogandDVR");
 	display();
+		
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_0,GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_1,GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_2,GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_3,GPIO_PIN_SET);
+		
+	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_5,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_6,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_7,GPIO_PIN_RESET);
+		
 	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_8);
 	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_9);
 	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_10);
@@ -433,6 +724,10 @@ void Welcome(){
 	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_15);
 	HAL_Delay(500);
 	noDisplay();
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_0,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_1,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_2,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_3,GPIO_PIN_RESET);
 	HAL_Delay(300);
 	}
 	display();
@@ -457,8 +752,12 @@ void Welcome(){
 	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_14,0);
 	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_15,0);
 	
+	HAL_TIM_Base_Stop_IT(&htim6);
+	HAL_TIM_Base_Stop_IT(&htim7);
+	
 	lap=1;
 	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_8);
+	counting();
 	DrawMap();
 	char array[1];
 	sprintf(array,"%d",chance);
@@ -466,11 +765,34 @@ void Welcome(){
 	print(array);
 	HAL_TIM_Base_Start_IT(&htim6);
 	HAL_TIM_Base_Start_IT(&htim7);
+	HAL_TIM_Base_Start_IT(&htim16);
 	HAL_ADC_Start_IT(&hadc1);
 	int i=1;
 	while(i==1){
-	i=SetMap();
+		if(startFlag==1){
+		i=SetMap();
+		SetScore();
+		}
+		if(startFlag==2){
+		clear();
+		startFlag=0;
+		while(startFlag==0){
+			setCursor(5,0);
+			print("YOU WIN");
+			setCursor(5,1);
+			print("CONTINUE?");
+			char arr[5];
+			sprintf(arr,"%d",score);
+			setCursor(5,2);
+			print(arr);
+			display();
+			HAL_Delay(300);
+			noDisplay();
+			HAL_Delay(300);
+		}
+		Welcome();
 	}
+}
 	HAL_TIM_Base_Stop_IT(&htim6);
 	HAL_TIM_Base_Stop_IT(&htim7);
 	HAL_ADC_Stop_IT(&hadc1);
@@ -518,6 +840,7 @@ void Welcome(){
 	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_13);
 	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_14);
 	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_15);
+	
 	HAL_Delay(500);
 	noDisplay();
 	HAL_Delay(300);
@@ -558,6 +881,8 @@ int main(void)
   MX_TIM6_Init();
   MX_TIM7_Init();
   MX_ADC1_Init();
+  MX_TIM16_Init();
+  MX_ADC4_Init();
   /* USER CODE BEGIN 2 */
 	LiquidCrystal(GPIOD, GPIO_PIN_8, GPIO_PIN_9, GPIO_PIN_10, GPIO_PIN_11, GPIO_PIN_12, GPIO_PIN_13, GPIO_PIN_14);
 	
@@ -567,6 +892,7 @@ int main(void)
 	startMove=0;
 	chance=8;
 	lapItCounter=0;
+	time=0;
 	Welcome();
   /* USER CODE END 2 */
 
@@ -623,8 +949,9 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC12;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC12|RCC_PERIPHCLK_ADC34;
   PeriphClkInit.Adc12ClockSelection = RCC_ADC12PLLCLK_DIV1;
+  PeriphClkInit.Adc34ClockSelection = RCC_ADC34PLLCLK_DIV1;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
@@ -693,6 +1020,48 @@ static void MX_ADC1_Init(void)
 
 }
 
+/* ADC4 init function */
+static void MX_ADC4_Init(void)
+{
+
+  ADC_ChannelConfTypeDef sConfig;
+
+    /**Common config 
+    */
+  hadc4.Instance = ADC4;
+  hadc4.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
+  hadc4.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc4.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc4.Init.ContinuousConvMode = DISABLE;
+  hadc4.Init.DiscontinuousConvMode = DISABLE;
+  hadc4.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc4.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc4.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc4.Init.NbrOfConversion = 1;
+  hadc4.Init.DMAContinuousRequests = DISABLE;
+  hadc4.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc4.Init.LowPowerAutoWait = DISABLE;
+  hadc4.Init.Overrun = ADC_OVR_DATA_OVERWRITTEN;
+  if (HAL_ADC_Init(&hadc4) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+    /**Configure Regular Channel 
+    */
+  sConfig.Channel = ADC_CHANNEL_3;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SingleDiff = ADC_SINGLE_ENDED;
+  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  sConfig.OffsetNumber = ADC_OFFSET_NONE;
+  sConfig.Offset = 0;
+  if (HAL_ADC_ConfigChannel(&hadc4, &sConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
 /* TIM6 init function */
 static void MX_TIM6_Init(void)
 {
@@ -743,6 +1112,24 @@ static void MX_TIM7_Init(void)
 
 }
 
+/* TIM16 init function */
+static void MX_TIM16_Init(void)
+{
+
+  htim16.Instance = TIM16;
+  htim16.Init.Prescaler = 36999;
+  htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim16.Init.Period = 7;
+  htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim16.Init.RepetitionCounter = 0;
+  htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim16) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
 /** Configure pins as 
         * Analog 
         * Input 
@@ -760,6 +1147,8 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5 
@@ -768,7 +1157,15 @@ static void MX_GPIO_Init(void)
                           |GPIO_PIN_15|GPIO_PIN_0|GPIO_PIN_1, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15|GPIO_PIN_0 
+                          |GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7 
+                          |GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PE2 PE3 PE4 PE5 
                            PE6 PE8 PE9 PE10 
@@ -783,8 +1180,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PC13 PC14 PC15 */
-  GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15;
+  /*Configure GPIO pins : PC13 PC14 PC15 PC0 
+                           PC1 PC2 PC3 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15|GPIO_PIN_0 
+                          |GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -795,6 +1194,22 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PA4 PA5 PA6 PA7 
+                           PA10 PA11 PA12 PA13 */
+  GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7 
+                          |GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PD0 PD1 PD2 PD3 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
