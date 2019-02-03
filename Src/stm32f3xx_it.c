@@ -63,10 +63,11 @@ int lapItCounter=0;
 int x=0,x1=0,x2=0,y=0;
 int col=-1;
 int pirCounter=0;
-char NUMS[4][4]={{'1','5','4','9'},
-									{'2','6','5','0'},
-									{'3','7','6','B'},
-									{'4','8','F','C'}};
+char upid[10]={"-"};
+char NUMS[4][4]={{'1','5','9','A'},
+				 {'2','6','0','B'},
+				 {'3','7','*','C'},
+				 {'4','8','#','D'}};
 
 typedef unsigned char byte;
 									
@@ -77,7 +78,7 @@ extern TIM_HandleTypeDef htim6;
 extern TIM_HandleTypeDef htim7;
 extern TIM_HandleTypeDef htim16;
 
-
+//Game & Car map
 byte leftSideOfMap[8] = {
 	0x18,
 	0x1C,
@@ -119,7 +120,7 @@ byte rightCornerOfMap[8] = {
 	0x03,
 	0x03,
 	0x0B,
-  0x1F,
+    0x1F,
 };
 
 byte leftCornerOfMap[8] = {
@@ -145,7 +146,7 @@ byte enemy[8] = {
 };
 
 byte rightSideOfCar[8] = {
-  0x00,
+    0x00,
 	0x18,
 	0x04,
 	0x1A,
@@ -156,7 +157,8 @@ byte rightSideOfCar[8] = {
 };
 
 byte leftSideOfCar[8] = {
-  0x00,
+//Counting 1-2-3
+    0x00,
 	0x03,
 	0x04,
 	0x0B,
@@ -174,7 +176,7 @@ byte full[8] = {
 	0x1F,
 	0x1F,
 	0x1F,
-	0x1F
+	0x1F,
 };
 
 byte HalfDown[8] = {		
@@ -185,7 +187,7 @@ byte HalfDown[8] = {
 	0x1F,
 	0x1F,
 	0x1F,
-	0x1F
+	0x1F,
 };
 
 byte DownTriangleR[8] = {	
@@ -196,7 +198,7 @@ byte DownTriangleR[8] = {
 	0x03,
 	0x07,
 	0x0F,
-	0x1F
+	0x1F,
 };
 
 
@@ -208,7 +210,7 @@ byte UpTriangleL[8] = {
 	0x00,
 	0x00,
 	0x00,
-	0x00
+	0x00,
 };
 
 byte DownTriangleL[8] = {	
@@ -219,7 +221,7 @@ byte DownTriangleL[8] = {
 	0x18,
 	0x1C,
 	0x1E,
-	0x1F
+	0x1F,
 };
 
 byte Middle21[8] = {		
@@ -230,7 +232,7 @@ byte Middle21[8] = {
 	0x0E,
 	0x1C,
 	0x18,
-	0x10
+	0x10,
 };
 
 
@@ -242,7 +244,7 @@ byte Middle22[8] = {
 	0x1F,
 	0x1F,
 	0x1E,
-	0x1C
+	0x1C,
 };
 
 byte Down21[8] = {
@@ -253,7 +255,7 @@ byte Down21[8] = {
 	0x1F,
 	0x1F,
 	0x1F,
-	0x1F
+	0x1F,
 };
 
 byte Down22[8] = {
@@ -264,7 +266,7 @@ byte Down22[8] = {
 	0x1F,
 	0x1F,
 	0x1F,
-	0x1F
+	0x1F,
 };
 
 byte Up31[8] = {
@@ -275,7 +277,7 @@ byte Up31[8] = {
 	0x1C,
 	0x18,
 	0x00,
-	0x00
+	0x00,
 };
 
 byte Up32[8] = {
@@ -286,7 +288,7 @@ byte Up32[8] = {
 	0x07,
 	0x0E,
 	0x1C,
-	0x18
+	0x18,
 };
 
 byte UpTriangleR[8] = {
@@ -297,7 +299,7 @@ byte UpTriangleR[8] = {
 	0x00,
 	0x00,
 	0x00,
-	0x00
+	0x00,
 };
 
 byte Middle31[8] = {
@@ -308,7 +310,7 @@ byte Middle31[8] = {
 	0x03,
 	0x01,
 	0x00,
-	0x00
+	0x00,
 };
 
 byte Middle32[8] = {
@@ -319,10 +321,11 @@ byte Middle32[8] = {
 	0x18,
 	0x1E,
 	0x07,
-	0x03
+	0x03,
 };
 
 byte Down3[8] = {
+
 	0x03,
 	0x03,
 	0x03,
@@ -330,9 +333,9 @@ byte Down3[8] = {
 	0x1E,
 	0x1C,
 	0x1C,
-	0x18
+	0x18,
 };
-
+//Counting 1-2-3 befor game starts
 void counting(){
 	createChar(10, full);
 	createChar(11, HalfDown);
@@ -442,7 +445,7 @@ void counting(){
 	HAL_Delay(500);
 	clear();
 }
-
+//saving game on server
 void Save(){
 		//printf("upid\n",);
 	printf("score\n%d\n",score);
@@ -457,7 +460,7 @@ void Save(){
 	//printf("ecp\n%d\n",ecp);
 	printf("save\n");
 }
-	
+//drawing the map for a new game
 void SetMapForFirstTime(){
 	for(int i=0;i<18;i++){
 		for(int j=0;j<4;j++){
@@ -478,7 +481,7 @@ void SetMapForFirstTime(){
 	map[8][3]='M';
 	map[9][3]='N';
 }
-
+//manage game map array while the game
 void DrawMap(){
 	//noDisplay();
 	createChar(0, leftSideOfMap);
@@ -571,7 +574,7 @@ int SetMap(){
 					else{
 						clear();
 						setCursor(4,1);
-						print("GAME OVER");
+						print("GAME OVER !");
 						return 0;
 					}
 				}
@@ -623,7 +626,7 @@ int SetMap(){
 							else{
 						clear();
 						setCursor(4,1);
-						print("GAME OVER");
+						print("GAME OVER !");
 						return 0;
 					}
 						}
@@ -663,7 +666,7 @@ int SetMap(){
 							else{
 						clear();
 						setCursor(4,1);
-						print("GAME OVER");
+						print("GAME OVER !");
 						return 0;
 					}
 						}
@@ -675,7 +678,7 @@ int SetMap(){
 }
 	return 1;
 }
-
+//calculate score of the game
 void SetScore(){
 	char array[4];
 	int x=0;
@@ -685,7 +688,7 @@ void SetScore(){
 //	sprintf(array,"%d",x);
 //	print(array);
 }
-
+//create enemys randomly
 void MakeNewEnemy(){
 	int r=0;
 	r=rand()%15 +1;
@@ -697,14 +700,15 @@ void MakeNewEnemy(){
 	else MakeNewEnemy();
 	HAL_Delay(500);
 }
-
+//manage time of creating new enemys and number of them
 int EnemyRandomTime(int maxNumber){
 	int r=0;
 	r=rand()%maxNumber;
 	return r;
 }
-
+//starting a new game from the menu
 void NewGame(){
+    
 	SetMapForFirstTime();
 	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_8,0);
 	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_9,0);
@@ -715,17 +719,17 @@ void NewGame(){
 	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_14,0);
 	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_15,0);
 	
-	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_0,0);
-	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_1,0);
-	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_2,0);
-	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,0);
-	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_4,0);
-	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_5,0);
-	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_6,0);
-	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_7,0);
-	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_13,0);
-	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_14,0);
-	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_15,0);
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_8,0);
+	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_9,0);
+	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_8,0);
+	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_9,0);
+	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_10,0);
+	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,0);
+	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,0);
+	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_13,0);
+	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_14,0);
+	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_15,0);
+	
 	
 	HAL_TIM_Base_Stop_IT(&htim6);
 	HAL_TIM_Base_Stop_IT(&htim7);
@@ -784,17 +788,17 @@ void NewGame(){
 //	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_14,0);
 //	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_15,0);
 //	
-//	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_0,0);
-//	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_1,0);
-//	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_2,0);
-//	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,0);
-//	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_4,0);
-//	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_5,0);
-//	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_6,0);
-//	HAL_GPIO_WritePin(GPIOE,GPIO_PIN_7,0);
-//	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_13,0);
-//	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_14,0);
-//	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_15,0);
+//HAL_GPIO_WritePin(GPIOC,GPIO_PIN_8,0);
+//	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_9,0);
+//	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_8,0);
+//	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_9,0);
+//	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_10,0);
+//	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,0);
+//	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,0);
+//	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_13,0);
+//	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_14,0);
+//	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_15,0);
+	
 //	while(1){
 //	setCursor(4,1);
 //	print("GAME OVER");
@@ -808,26 +812,25 @@ void NewGame(){
 //	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_14);
 //	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_15);
 //		
-//	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_0);
-//	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_1);
-//	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_2);
-//	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_3);
-//	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_4);
-//	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_5);
-//	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_6);
-//	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_7);
-//	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_13);
-//	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_14);
-//	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_15);
-//	
+////	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_8);
+//		HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_9);
+//		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_8);
+//		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_9);
+//		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_10);
+//		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_11);
+//		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_12);
+//		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_13);
+//		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_14);
+//		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_15);
+	
 //	HAL_Delay(500);
 //	noDisplay();
 //	HAL_Delay(300);
 //	}
 }
-
+//load game from server o the menu
 void LoadGame(){}
-
+//about part on the menu
 void About(){
 	clear();
 	while(startFlag==0){
@@ -858,17 +861,16 @@ void About(){
 	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_14);
 	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_15);
 		
-	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_0);
-	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_1);
-	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_2);
-	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_3);
-	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_4);
-	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_5);
-	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_6);
-	HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_7);
-	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_13);
-	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_14);
-	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_15);
+		HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_8);
+		HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_9);
+		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_8);
+		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_9);
+		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_10);
+		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_11);
+		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_12);
+		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_13);
+		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_14);
+		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_15);
 	HAL_Delay(500);
 	noDisplay();
 	HAL_GPIO_WritePin(GPIOC,GPIO_PIN_0,GPIO_PIN_RESET);
@@ -883,7 +885,7 @@ void About(){
 
 /* External variables --------------------------------------------------------*/
 extern ADC_HandleTypeDef hadc1;
-extern ADC_HandleTypeDef hadc4;
+extern ADC_HandleTypeDef hadc3;
 extern TIM_HandleTypeDef htim6;
 extern TIM_HandleTypeDef htim7;
 extern TIM_HandleTypeDef htim16;
@@ -896,8 +898,7 @@ extern UART_HandleTypeDef huart4;
 /**
 * @brief This function handles Non maskable interrupt.
 */
-void NMI_Handler(void)
-{
+void NMI_Handler(void){
   /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
 
   /* USER CODE END NonMaskableInt_IRQn 0 */
@@ -909,8 +910,7 @@ void NMI_Handler(void)
 /**
 * @brief This function handles Hard fault interrupt.
 */
-void HardFault_Handler(void)
-{
+void HardFault_Handler(void){
   /* USER CODE BEGIN HardFault_IRQn 0 */
 
   /* USER CODE END HardFault_IRQn 0 */
@@ -927,8 +927,7 @@ void HardFault_Handler(void)
 /**
 * @brief This function handles Memory management fault.
 */
-void MemManage_Handler(void)
-{
+void MemManage_Handler(void){
   /* USER CODE BEGIN MemoryManagement_IRQn 0 */
 
   /* USER CODE END MemoryManagement_IRQn 0 */
@@ -945,8 +944,7 @@ void MemManage_Handler(void)
 /**
 * @brief This function handles Pre-fetch fault, memory access fault.
 */
-void BusFault_Handler(void)
-{
+void BusFault_Handler(void){
   /* USER CODE BEGIN BusFault_IRQn 0 */
 
   /* USER CODE END BusFault_IRQn 0 */
@@ -963,8 +961,7 @@ void BusFault_Handler(void)
 /**
 * @brief This function handles Undefined instruction or illegal state.
 */
-void UsageFault_Handler(void)
-{
+void UsageFault_Handler(void){
   /* USER CODE BEGIN UsageFault_IRQn 0 */
 
   /* USER CODE END UsageFault_IRQn 0 */
@@ -981,8 +978,7 @@ void UsageFault_Handler(void)
 /**
 * @brief This function handles System service call via SWI instruction.
 */
-void SVC_Handler(void)
-{
+void SVC_Handler(void){
   /* USER CODE BEGIN SVCall_IRQn 0 */
 
   /* USER CODE END SVCall_IRQn 0 */
@@ -994,8 +990,7 @@ void SVC_Handler(void)
 /**
 * @brief This function handles Debug monitor.
 */
-void DebugMon_Handler(void)
-{
+void DebugMon_Handler(void){
   /* USER CODE BEGIN DebugMonitor_IRQn 0 */
 
   /* USER CODE END DebugMonitor_IRQn 0 */
@@ -1007,8 +1002,7 @@ void DebugMon_Handler(void)
 /**
 * @brief This function handles Pendable request for system service.
 */
-void PendSV_Handler(void)
-{
+void PendSV_Handler(void){
   /* USER CODE BEGIN PendSV_IRQn 0 */
 
   /* USER CODE END PendSV_IRQn 0 */
@@ -1020,8 +1014,7 @@ void PendSV_Handler(void)
 /**
 * @brief This function handles System tick timer.
 */
-void SysTick_Handler(void)
-{
+void SysTick_Handler(void){
   /* USER CODE BEGIN SysTick_IRQn 0 */
 
   /* USER CODE END SysTick_IRQn 0 */
@@ -1042,8 +1035,7 @@ void SysTick_Handler(void)
 /**
 * @brief This function handles EXTI line0 interrupt.
 */
-void EXTI0_IRQHandler(void)
-{
+void EXTI0_IRQHandler(void){
   /* USER CODE BEGIN EXTI0_IRQn 0 */
 			if(startFlag==1){
 				//while(HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0)){
@@ -1061,10 +1053,23 @@ void EXTI0_IRQHandler(void)
 }
 
 /**
+* @brief This function handles EXTI line1 interrupt.
+*/
+void EXTI1_IRQHandler(void){
+  /* USER CODE BEGIN EXTI1_IRQn 0 */
+
+  /* USER CODE END EXTI1_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
+  /* USER CODE BEGIN EXTI1_IRQn 1 */
+
+  /* USER CODE END EXTI1_IRQn 1 */
+}
+
+/**
 * @brief This function handles ADC1 and ADC2 interrupts.
 */
-void ADC1_2_IRQHandler(void)
-{
+//volume code for moving the car
+void ADC1_2_IRQHandler(void){
   /* USER CODE BEGIN ADC1_2_IRQn 0 */
 	//clear();
 	int i=0;
@@ -1088,8 +1093,8 @@ void ADC1_2_IRQHandler(void)
 /**
 * @brief This function handles TIM1 update and TIM16 interrupts.
 */
-void TIM1_UP_TIM16_IRQHandler(void)
-{
+//7-segment code :|
+void TIM1_UP_TIM16_IRQHandler(void){
   /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 0 */
 	
   /* USER CODE END TIM1_UP_TIM16_IRQn 0 */
@@ -1392,8 +1397,8 @@ void TIM1_UP_TIM16_IRQHandler(void)
 /**
 * @brief This function handles EXTI line[15:10] interrupts.
 */
-void EXTI15_10_IRQHandler(void)
-{
+//keypad code :((( 
+void EXTI15_10_IRQHandler(void){
   /* USER CODE BEGIN EXTI15_10_IRQn 0 */
 		for(int row=0;row<4;row++){
 			col=-1;
@@ -1448,10 +1453,11 @@ void EXTI15_10_IRQHandler(void)
 //				HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_10);
 //			if(col==3)
 //				HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_11);
+			//print("hiiiiiiiiiiiiiiiiiiiiiiiii");
 			if(col!=-1){
 //				setCursor(0,0);
 //				write(NUMS[row][col]);
-				if(startFlag !=1){
+				if(startFlag ==0){
 					if(NUMS[row][col]=='1'){
 						HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,1);
 						HAL_GPIO_WritePin(GPIOB,GPIO_PIN_6,1);
@@ -1476,6 +1482,17 @@ void EXTI15_10_IRQHandler(void)
 					}
 				}
 				
+				if(startFlag==3){
+					//print("hiiiiiiiiiii");
+					int i=0;
+					while(NUMS[row][col]!='#'){
+						upid[i]=NUMS[row][col];
+						setCursor(i,0);
+						write(upid[i]);
+						i++;
+					}
+				}
+				
 			}
 		}
 
@@ -1494,10 +1511,37 @@ void EXTI15_10_IRQHandler(void)
 }
 
 /**
+* @brief This function handles ADC3 global interrupt.
+*/
+//PIR sensore code 
+void ADC3_IRQHandler(void){
+  /* USER CODE BEGIN ADC3_IRQn 0 */
+	int pir=0;
+	pirCounter++;
+	pir = HAL_ADC_GetValue(&hadc3);
+	if(pir==51 && pirCounter==10){
+		clear();
+		HAL_TIM_Base_Stop_IT(&htim6);
+		HAL_TIM_Base_Stop_IT(&htim7);
+		HAL_TIM_Base_Stop_IT(&htim16);
+		HAL_ADC_Stop_IT(&hadc1);
+		HAL_ADC_Stop_IT(&hadc4);
+		pirCounter=0;
+	}
+	HAL_ADC_Start_IT(&hadc3);
+
+  /* USER CODE END ADC3_IRQn 0 */
+  HAL_ADC_IRQHandler(&hadc3);
+  /* USER CODE BEGIN ADC3_IRQn 1 */
+
+  /* USER CODE END ADC3_IRQn 1 */
+}
+
+/**
 * @brief This function handles UART4 global interrupt / UART4 wake-up interrupt through EXTI line 34.
 */
-void UART4_IRQHandler(void)
-{
+//
+void UART4_IRQHandler(void){
   /* USER CODE BEGIN UART4_IRQn 0 */
 
   /* USER CODE END UART4_IRQn 0 */
@@ -1510,8 +1554,8 @@ void UART4_IRQHandler(void)
 /**
 * @brief This function handles Timer 6 interrupt and DAC underrun interrupts.
 */
-void TIM6_DAC_IRQHandler(void)
-{
+//sharge turbo & level LEDs code
+void TIM6_DAC_IRQHandler(void){
   /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
 	time++;
 	itTimer=1;
@@ -1526,34 +1570,34 @@ void TIM6_DAC_IRQHandler(void)
 	
 	switch(turboCharge){
 		case 1:
-			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_0,1);
+			HAL_GPIO_WritePin(GPIOC,GPIO_PIN_8,1);
 			break;
 		case 2:
-			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_1,1);
+			HAL_GPIO_WritePin(GPIOC,GPIO_PIN_9,1);
 			break;
 		case 3:
-			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_2,1);
+			HAL_GPIO_WritePin(GPIOA,GPIO_PIN_8,1);
 			break;
 		case 4:
-			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,1);
+			HAL_GPIO_WritePin(GPIOA,GPIO_PIN_9,1);
 			break;
 		case 5:
-			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_4,1);
+			HAL_GPIO_WritePin(GPIOA,GPIO_PIN_10,1);
 			break;
 		case 6:
-			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_5,1);
+			HAL_GPIO_WritePin(GPIOA,GPIO_PIN_11,1);
 			break;
 		case 7:
-			HAL_GPIO_WritePin(GPIOE,GPIO_PIN_6,1);
+			HAL_GPIO_WritePin(GPIOA,GPIO_PIN_12,1);
 			break;
 		case 8:
-			HAL_GPIO_WritePin(GPIOC,GPIO_PIN_13,1);
+			HAL_GPIO_WritePin(GPIOA,GPIO_PIN_13,1);
 			break;
 		case 9:
-			HAL_GPIO_WritePin(GPIOC,GPIO_PIN_14,1);
+			HAL_GPIO_WritePin(GPIOA,GPIO_PIN_14,1);
 			break;
 		case 10:
-			HAL_GPIO_WritePin(GPIOC,GPIO_PIN_15,1);
+			HAL_GPIO_WritePin(GPIOA,GPIO_PIN_15,1);
 			break;
 	}
 	
@@ -1644,8 +1688,8 @@ void TIM6_DAC_IRQHandler(void)
 /**
 * @brief This function handles TIM7 global interrupt.
 */
-void TIM7_IRQHandler(void)
-{
+//decharge turbo code
+void TIM7_IRQHandler(void){
   /* USER CODE BEGIN TIM7_IRQn 0 */
 	//int turboDecherg=0;
 	if(buttonFlag!=0){
@@ -1715,32 +1759,6 @@ void TIM7_IRQHandler(void)
   /* USER CODE BEGIN TIM7_IRQn 1 */
 
   /* USER CODE END TIM7_IRQn 1 */
-}
-
-/**
-* @brief This function handles ADC4 interrupt.
-*/
-void ADC4_IRQHandler(void)
-{
-  /* USER CODE BEGIN ADC4_IRQn 0 */
-	int pir=0;
-	pirCounter++;
-	pir = HAL_ADC_GetValue(&hadc4);
-	if(pir==51 && pirCounter==10){
-		clear();
-		HAL_TIM_Base_Stop_IT(&htim6);
-		HAL_TIM_Base_Stop_IT(&htim7);
-		HAL_TIM_Base_Stop_IT(&htim16);
-		HAL_ADC_Stop_IT(&hadc1);
-		HAL_ADC_Stop_IT(&hadc4);
-		pirCounter=0;
-	}
-	HAL_ADC_Start_IT(&hadc4);
-  /* USER CODE END ADC4_IRQn 0 */
-  HAL_ADC_IRQHandler(&hadc4);
-  /* USER CODE BEGIN ADC4_IRQn 1 */
-	
-  /* USER CODE END ADC4_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
