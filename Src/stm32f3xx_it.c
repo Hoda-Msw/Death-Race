@@ -72,8 +72,7 @@ char NUMS[4][4]={{'1','5','9','A'},
 typedef unsigned char byte;
 									
 extern ADC_HandleTypeDef hadc1;
-extern ADC_HandleTypeDef hadc4;
-
+extern ADC_HandleTypeDef hadc2;
 extern TIM_HandleTypeDef htim6;
 extern TIM_HandleTypeDef htim7;
 extern TIM_HandleTypeDef htim16;
@@ -191,12 +190,12 @@ byte HalfDown[8] = {
 };
 
 byte DownTriangleR[8] = {	
-	0x00,
-	0x00,
-	0x00,
-	0x00,
+	0x01,
+	0x03,
 	0x03,
 	0x07,
+	0x07,
+	0x0F,
 	0x0F,
 	0x1F,
 };
@@ -747,7 +746,7 @@ void NewGame(){
 	HAL_TIM_Base_Start_IT(&htim7);
 	HAL_TIM_Base_Start_IT(&htim16);
 	HAL_ADC_Start_IT(&hadc1);
-	HAL_ADC_Start_IT(&hadc4);
+	HAL_ADC_Start_IT(&hadc2);
 	
 //	int i=1;
 //	while(1){
@@ -828,7 +827,7 @@ void NewGame(){
 //	HAL_Delay(300);
 //	}
 }
-//load game from server o the menu
+//load game from server to the menu
 void LoadGame(){}
 //about part on the menu
 void About(){
@@ -885,6 +884,7 @@ void About(){
 
 /* External variables --------------------------------------------------------*/
 extern ADC_HandleTypeDef hadc1;
+extern ADC_HandleTypeDef hadc2;
 extern ADC_HandleTypeDef hadc3;
 extern TIM_HandleTypeDef htim6;
 extern TIM_HandleTypeDef htim7;
@@ -898,7 +898,8 @@ extern UART_HandleTypeDef huart4;
 /**
 * @brief This function handles Non maskable interrupt.
 */
-void NMI_Handler(void){
+void NMI_Handler(void)
+{
   /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
 
   /* USER CODE END NonMaskableInt_IRQn 0 */
@@ -910,7 +911,8 @@ void NMI_Handler(void){
 /**
 * @brief This function handles Hard fault interrupt.
 */
-void HardFault_Handler(void){
+void HardFault_Handler(void)
+{
   /* USER CODE BEGIN HardFault_IRQn 0 */
 
   /* USER CODE END HardFault_IRQn 0 */
@@ -927,7 +929,8 @@ void HardFault_Handler(void){
 /**
 * @brief This function handles Memory management fault.
 */
-void MemManage_Handler(void){
+void MemManage_Handler(void)
+{
   /* USER CODE BEGIN MemoryManagement_IRQn 0 */
 
   /* USER CODE END MemoryManagement_IRQn 0 */
@@ -944,7 +947,8 @@ void MemManage_Handler(void){
 /**
 * @brief This function handles Pre-fetch fault, memory access fault.
 */
-void BusFault_Handler(void){
+void BusFault_Handler(void)
+{
   /* USER CODE BEGIN BusFault_IRQn 0 */
 
   /* USER CODE END BusFault_IRQn 0 */
@@ -961,7 +965,8 @@ void BusFault_Handler(void){
 /**
 * @brief This function handles Undefined instruction or illegal state.
 */
-void UsageFault_Handler(void){
+void UsageFault_Handler(void)
+{
   /* USER CODE BEGIN UsageFault_IRQn 0 */
 
   /* USER CODE END UsageFault_IRQn 0 */
@@ -978,7 +983,8 @@ void UsageFault_Handler(void){
 /**
 * @brief This function handles System service call via SWI instruction.
 */
-void SVC_Handler(void){
+void SVC_Handler(void)
+{
   /* USER CODE BEGIN SVCall_IRQn 0 */
 
   /* USER CODE END SVCall_IRQn 0 */
@@ -990,7 +996,8 @@ void SVC_Handler(void){
 /**
 * @brief This function handles Debug monitor.
 */
-void DebugMon_Handler(void){
+void DebugMon_Handler(void)
+{
   /* USER CODE BEGIN DebugMonitor_IRQn 0 */
 
   /* USER CODE END DebugMonitor_IRQn 0 */
@@ -1002,7 +1009,8 @@ void DebugMon_Handler(void){
 /**
 * @brief This function handles Pendable request for system service.
 */
-void PendSV_Handler(void){
+void PendSV_Handler(void)
+{
   /* USER CODE BEGIN PendSV_IRQn 0 */
 
   /* USER CODE END PendSV_IRQn 0 */
@@ -1014,7 +1022,8 @@ void PendSV_Handler(void){
 /**
 * @brief This function handles System tick timer.
 */
-void SysTick_Handler(void){
+void SysTick_Handler(void)
+{
   /* USER CODE BEGIN SysTick_IRQn 0 */
 
   /* USER CODE END SysTick_IRQn 0 */
@@ -1035,7 +1044,8 @@ void SysTick_Handler(void){
 /**
 * @brief This function handles EXTI line0 interrupt.
 */
-void EXTI0_IRQHandler(void){
+void EXTI0_IRQHandler(void)
+{
   /* USER CODE BEGIN EXTI0_IRQn 0 */
 			if(startFlag==1){
 				//while(HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0)){
@@ -1055,7 +1065,8 @@ void EXTI0_IRQHandler(void){
 /**
 * @brief This function handles EXTI line1 interrupt.
 */
-void EXTI1_IRQHandler(void){
+void EXTI1_IRQHandler(void)
+{
   /* USER CODE BEGIN EXTI1_IRQn 0 */
 
   /* USER CODE END EXTI1_IRQn 0 */
@@ -1068,17 +1079,17 @@ void EXTI1_IRQHandler(void){
 /**
 * @brief This function handles ADC1 and ADC2 interrupts.
 */
-//volume code for moving the car
-void ADC1_2_IRQHandler(void){
+void ADC1_2_IRQHandler(void)
+{
   /* USER CODE BEGIN ADC1_2_IRQn 0 */
 	//clear();
-	int i=0;
+	int volume=0;
 	adcFlag++;
 	
 	if(adcFlag==3){
 		adcFlag=0;
-		i=HAL_ADC_GetValue(&hadc1);
-		scale=i*14/63 +1;
+		volume=HAL_ADC_GetValue(&hadc1);
+		scale=volume*14/62 +1;
 		moveC=1;
 		SetMap();
 	}
@@ -1086,6 +1097,7 @@ void ADC1_2_IRQHandler(void){
 
   /* USER CODE END ADC1_2_IRQn 0 */
   HAL_ADC_IRQHandler(&hadc1);
+  HAL_ADC_IRQHandler(&hadc2);
   /* USER CODE BEGIN ADC1_2_IRQn 1 */
   /* USER CODE END ADC1_2_IRQn 1 */
 }
@@ -1093,8 +1105,8 @@ void ADC1_2_IRQHandler(void){
 /**
 * @brief This function handles TIM1 update and TIM16 interrupts.
 */
-//7-segment code :|
-void TIM1_UP_TIM16_IRQHandler(void){
+void TIM1_UP_TIM16_IRQHandler(void)
+{
   /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 0 */
 	
   /* USER CODE END TIM1_UP_TIM16_IRQn 0 */
@@ -1397,8 +1409,8 @@ void TIM1_UP_TIM16_IRQHandler(void){
 /**
 * @brief This function handles EXTI line[15:10] interrupts.
 */
-//keypad code :((( 
-void EXTI15_10_IRQHandler(void){
+void EXTI15_10_IRQHandler(void)
+{
   /* USER CODE BEGIN EXTI15_10_IRQn 0 */
 		for(int row=0;row<4;row++){
 			col=-1;
@@ -1445,18 +1457,18 @@ void EXTI15_10_IRQHandler(void){
 				while(HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_15));
 			}
 	
-//			if(col==0)
-//				HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_8);
-//			if(col==1)
-//				HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_9);
-//			if(col==2)
-//				HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_10);
-//			if(col==3)
-//				HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_11);
+			if(col==0)
+				HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_8);
+			if(col==1)
+				HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_9);
+			if(col==2)
+				HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_10);
+			if(col==3)
+				HAL_GPIO_TogglePin(GPIOE,GPIO_PIN_11);
 			//print("hiiiiiiiiiiiiiiiiiiiiiiiii");
 			if(col!=-1){
-//				setCursor(0,0);
-//				write(NUMS[row][col]);
+				setCursor(0,0);
+				write(NUMS[row][col]);
 				if(startFlag ==0){
 					if(NUMS[row][col]=='1'){
 						HAL_GPIO_WritePin(GPIOB,GPIO_PIN_5,1);
@@ -1513,8 +1525,8 @@ void EXTI15_10_IRQHandler(void){
 /**
 * @brief This function handles ADC3 global interrupt.
 */
-//PIR sensore code 
-void ADC3_IRQHandler(void){
+void ADC3_IRQHandler(void)
+{
   /* USER CODE BEGIN ADC3_IRQn 0 */
 	int pir=0;
 	pirCounter++;
@@ -1525,7 +1537,7 @@ void ADC3_IRQHandler(void){
 		HAL_TIM_Base_Stop_IT(&htim7);
 		HAL_TIM_Base_Stop_IT(&htim16);
 		HAL_ADC_Stop_IT(&hadc1);
-		HAL_ADC_Stop_IT(&hadc4);
+		HAL_ADC_Stop_IT(&hadc2);
 		pirCounter=0;
 	}
 	HAL_ADC_Start_IT(&hadc3);
@@ -1540,8 +1552,8 @@ void ADC3_IRQHandler(void){
 /**
 * @brief This function handles UART4 global interrupt / UART4 wake-up interrupt through EXTI line 34.
 */
-//
-void UART4_IRQHandler(void){
+void UART4_IRQHandler(void)
+{
   /* USER CODE BEGIN UART4_IRQn 0 */
 
   /* USER CODE END UART4_IRQn 0 */
@@ -1554,8 +1566,8 @@ void UART4_IRQHandler(void){
 /**
 * @brief This function handles Timer 6 interrupt and DAC underrun interrupts.
 */
-//sharge turbo & level LEDs code
-void TIM6_DAC_IRQHandler(void){
+void TIM6_DAC_IRQHandler(void)
+{
   /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
 	time++;
 	itTimer=1;
@@ -1688,8 +1700,8 @@ void TIM6_DAC_IRQHandler(void){
 /**
 * @brief This function handles TIM7 global interrupt.
 */
-//decharge turbo code
-void TIM7_IRQHandler(void){
+void TIM7_IRQHandler(void)
+{
   /* USER CODE BEGIN TIM7_IRQn 0 */
 	//int turboDecherg=0;
 	if(buttonFlag!=0){

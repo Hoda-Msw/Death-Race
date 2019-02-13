@@ -50,13 +50,13 @@
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
+ADC_HandleTypeDef hadc2;
 ADC_HandleTypeDef hadc3;
-ADC_HandleTypeDef hadc4;
 
 CRC_HandleTypeDef hcrc;
 
 RTC_HandleTypeDef hrtc;
-
+    
 TIM_HandleTypeDef htim6;
 TIM_HandleTypeDef htim7;
 TIM_HandleTypeDef htim16;
@@ -80,8 +80,8 @@ static void MX_TIM16_Init(void);
 static void MX_CRC_Init(void);
 static void MX_UART4_Init(void);
 static void MX_RTC_Init(void);
-static void MX_ADC4_Init(void);
 static void MX_ADC3_Init(void);
+static void MX_ADC2_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -111,8 +111,7 @@ void Menu(){
   *
   * @retval None
   */
-int main(void)
-{
+int main(void){
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -142,8 +141,8 @@ int main(void)
   MX_CRC_Init();
   MX_UART4_Init();
   MX_RTC_Init();
-  MX_ADC4_Init();
   MX_ADC3_Init();
+  MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
 	LiquidCrystal(GPIOD, GPIO_PIN_8, GPIO_PIN_9, GPIO_PIN_10, GPIO_PIN_11, GPIO_PIN_12, GPIO_PIN_13, GPIO_PIN_14);
 	
@@ -154,12 +153,13 @@ int main(void)
 	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_8,GPIO_PIN_SET);
 
 	Menu();
+    
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+  while (1){
+      
 //		GameController();
   /* USER CODE END WHILE */
 
@@ -284,6 +284,48 @@ static void MX_ADC1_Init(void)
 
 }
 
+/* ADC2 init function */
+static void MX_ADC2_Init(void)
+{
+
+  ADC_ChannelConfTypeDef sConfig;
+
+    /**Common config 
+    */
+  hadc2.Instance = ADC2;
+  hadc2.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
+  hadc2.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc2.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc2.Init.ContinuousConvMode = DISABLE;
+  hadc2.Init.DiscontinuousConvMode = DISABLE;
+  hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc2.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc2.Init.NbrOfConversion = 1;
+  hadc2.Init.DMAContinuousRequests = DISABLE;
+  hadc2.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc2.Init.LowPowerAutoWait = DISABLE;
+  hadc2.Init.Overrun = ADC_OVR_DATA_OVERWRITTEN;
+  if (HAL_ADC_Init(&hadc2) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+    /**Configure Regular Channel 
+    */
+  sConfig.Channel = ADC_CHANNEL_10;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SingleDiff = ADC_SINGLE_ENDED;
+  sConfig.SamplingTime = ADC_SAMPLETIME_601CYCLES_5;
+  sConfig.OffsetNumber = ADC_OFFSET_NONE;
+  sConfig.Offset = 0;
+  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
+  {
+    _Error_Handler(__FILE__, __LINE__);
+  }
+
+}
+
 /* ADC3 init function */
 static void MX_ADC3_Init(void)
 {
@@ -335,48 +377,6 @@ static void MX_ADC3_Init(void)
 
 }
 
-/* ADC4 init function */
-static void MX_ADC4_Init(void)
-{
-
-  ADC_ChannelConfTypeDef sConfig;
-
-    /**Common config 
-    */
-  hadc4.Instance = ADC4;
-  hadc4.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
-  hadc4.Init.Resolution = ADC_RESOLUTION_12B;
-  hadc4.Init.ScanConvMode = ADC_SCAN_DISABLE;
-  hadc4.Init.ContinuousConvMode = DISABLE;
-  hadc4.Init.DiscontinuousConvMode = DISABLE;
-  hadc4.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc4.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-  hadc4.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc4.Init.NbrOfConversion = 1;
-  hadc4.Init.DMAContinuousRequests = DISABLE;
-  hadc4.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-  hadc4.Init.LowPowerAutoWait = DISABLE;
-  hadc4.Init.Overrun = ADC_OVR_DATA_OVERWRITTEN;
-  if (HAL_ADC_Init(&hadc4) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-    /**Configure Regular Channel 
-    */
-  sConfig.Channel = ADC_CHANNEL_8;
-  sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SingleDiff = ADC_SINGLE_ENDED;
-  sConfig.SamplingTime = ADC_SAMPLETIME_601CYCLES_5;
-  sConfig.OffsetNumber = ADC_OFFSET_NONE;
-  sConfig.Offset = 0;
-  if (HAL_ADC_ConfigChannel(&hadc4, &sConfig) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-}
-
 /* CRC init function */
 static void MX_CRC_Init(void)
 {
@@ -395,18 +395,28 @@ static void MX_CRC_Init(void)
 }
 
 /* RTC init function */
-static void MX_RTC_Init(void)
-{
+static void MX_RTC_Init(void){
 
   /* USER CODE BEGIN RTC_Init 0 */
-
+    int i = 0;
+	char str[20];
+	char str2[20];
   /* USER CODE END RTC_Init 0 */
 
   RTC_TimeTypeDef sTime;
   RTC_DateTypeDef sDate;
 
   /* USER CODE BEGIN RTC_Init 1 */
-
+    HAL_RTC_GetTime(&hrtc , &sTime,RTC_FORMAT_BCD);
+	HAL_RTC_GetDate(&hrtc , &sDate,RTC_FORMAT_BCD);
+		setCursor(0, 1);
+    
+		// print the number of seconds since reset:		
+		sprintf(str, "%d : %d : %d", sTime.Hours , sTime.Minutes , sTime.Seconds);
+		print(str);
+		setCursor(0, 2);
+		sprintf(str2, " 20%d / %d / %d " , sDate.Year , sDate.Month , sDate.Date);
+		print(str2);
   /* USER CODE END RTC_Init 1 */
 
     /**Initialize RTC Only 
