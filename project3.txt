@@ -1,6 +1,6 @@
 Configuration	project3
 STM32CubeMX 	4.27.0
-Date	01/29/2019
+Date	02/03/2019
 MCU	STM32F303VCTx
 
 
@@ -8,9 +8,12 @@ MCU	STM32F303VCTx
 PERIPHERALS	MODES	FUNCTIONS	PINS
 ADC1	IN3 Single-ended	ADC1_IN3	PA2
 ADC1	IN4 Single-ended	ADC1_IN4	PA3
-ADC4	IN3 Single-ended	ADC4_IN3	PB12
+ADC3	IN12 Single-ended	ADC3_IN12	PB0
+ADC4	IN8 Single-ended	ADC4_IN8	PD11
 RCC	Crystal/Ceramic Resonator	RCC_OSC_IN	PF0-OSC_IN
 RCC	Crystal/Ceramic Resonator	RCC_OSC_OUT	PF1-OSC_OUT
+RTC	Activate RTC Clock Source	RTC_VS_RTC_Activate	VP_RTC_VS_RTC_Activate
+RTC	RTC Enabled	RTC_VS_RTC_Calendar	VP_RTC_VS_RTC_Calendar
 SYS	SysTick	SYS_VS_Systick	VP_SYS_VS_Systick
 TIM16	Enable_Timer	TIM16_VS_ClockSourceINT	VP_TIM16_VS_ClockSourceINT
 UART4	Asynchronous	UART4_RX	PC11
@@ -19,14 +22,6 @@ UART4	Asynchronous	UART4_TX	PC10
 
 
 Pin Nb	PINs	FUNCTIONs	LABELs
-1	PE2	GPIO_Output	
-2	PE3	GPIO_Output	
-3	PE4	GPIO_Output	
-4	PE5	GPIO_Output	
-5	PE6	GPIO_Output	
-7	PC13	GPIO_Output	
-8	PC14-OSC32_IN	GPIO_Output	
-9	PC15-OSC32_OUT	GPIO_Output	
 12	PF0-OSC_IN	RCC_OSC_IN	
 13	PF1-OSC_OUT	RCC_OSC_OUT	
 15	PC0	GPIO_Output	
@@ -40,6 +35,8 @@ Pin Nb	PINs	FUNCTIONs	LABELs
 30	PA5	GPIO_Output	
 31	PA6	GPIO_Output	
 32	PA7	GPIO_Output	
+35	PB0	ADC3_IN12	
+36	PB1	GPIO_EXTI1	
 39	PE8	GPIO_Output	
 40	PE9	GPIO_Output	
 41	PE10	GPIO_Output	
@@ -49,14 +46,21 @@ Pin Nb	PINs	FUNCTIONs	LABELs
 45	PE14	GPIO_Output	
 46	PE15	GPIO_Output	
 48	PB11	GPIO_EXTI11	
-51	PB12	ADC4_IN3	
 52	PB13	GPIO_EXTI13	
 53	PB14	GPIO_EXTI14	
 54	PB15	GPIO_EXTI15	
+58	PD11	ADC4_IN8	
+59	PD12*	TSC_G8_IO1	
+65	PC8	GPIO_Output	
+66	PC9	GPIO_Output	
+67	PA8	GPIO_Output	
+68	PA9	GPIO_Output	
 69	PA10	GPIO_Output	
 70	PA11	GPIO_Output	
 71	PA12	GPIO_Output	
 72	PA13	GPIO_Output	
+76	PA14	GPIO_Output	
+77	PA15	GPIO_Output	
 78	PC10	UART4_TX	
 79	PC11	UART4_RX	
 81	PD0	GPIO_Output	
@@ -67,8 +71,6 @@ Pin Nb	PINs	FUNCTIONs	LABELs
 92	PB6	GPIO_Output	
 93	PB7	GPIO_Output	
 95	PB8	GPIO_Output	
-97	PE0	GPIO_Output	
-98	PE1	GPIO_Output	
 
 
 
@@ -76,7 +78,7 @@ SOFTWARE PROJECT
 
 Project Settings : 
 Project Name : project3
-Project Folder : D:\StudyingFiles\InProgress\MicroProcessore\PrjTA\FinalPrj\finalProject_phase1
+Project Folder : D:\StudyingFiles\InProgress\MicroProcessore\PrjTA\FinalPhase2\finalProject_phase1
 Toolchain / IDE : MDK-ARM V5
 Firmware Package Name and Version : STM32Cube FW_F3 V1.10.0
 
